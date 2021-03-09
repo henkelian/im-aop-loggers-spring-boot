@@ -1,0 +1,104 @@
+package im.aop.loggers.advice.after.throwing;
+
+import java.util.Objects;
+
+import org.aspectj.lang.JoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
+
+import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.LoggerService;
+import im.aop.loggers.logging.message.ExceptionStringSupplierRegistrar;
+import im.aop.loggers.logging.message.JoinPointStringSupplierRegistrar;
+import im.aop.loggers.logging.message.StringSubstitutor;
+import im.aop.loggers.logging.message.StringSupplierLookup;
+
+public class LogAfterThrowingService {
+
+  private static final StringSubstitutor STRING_SUBSTITUTOR = new StringSubstitutor();
+
+  private static final JoinPointStringSupplierRegistrar JOIN_POINT_STRING_SUPPLIER_REGISTRAR =
+      new JoinPointStringSupplierRegistrar();
+
+  private static final ExceptionStringSupplierRegistrar EXCEPTION_STRING_SUPPLIER_REGISTRAR =
+      new ExceptionStringSupplierRegistrar();
+
+  private static final LoggerService LOGGER_SERVICE = new LoggerService();
+
+  private final AopLoggersProperties aopLoggersProperties;
+
+  public LogAfterThrowingService(final AopLoggersProperties aopLoggersProperties) {
+    this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
+  }
+
+  public void log(
+      final JoinPoint joinPoint, final LogAfterThrowing annotation, final Throwable exception) {
+    final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
+    if (isDisabled()
+        || isLoggerLevelDisabled(logger, annotation.level())
+        || isIgnoredException(exception, annotation.ignoreExceptions())) {
+      return;
+    }
+
+    final StringSupplierLookup stringLookup = new StringSupplierLookup();
+
+    logExcitedAbnormallyMessage(joinPoint, annotation, logger, stringLookup, exception);
+  }
+
+  private boolean isDisabled() {
+    return aopLoggersProperties.isEnabled() == false;
+  }
+
+  private boolean isLoggerLevelDisabled(final Logger logger, final Level level) {
+    return LOGGER_SERVICE.isEnabled(logger, level) == false;
+  }
+
+  private boolean isIgnoredException(
+      final Throwable exception, final Class<? extends Throwable>[] ignoredExceptions) {
+    if (exception == null) {
+      return true;
+    }
+
+    return matchesIgnoreExceptions(exception, ignoredExceptions)
+        || matchesIgnoreExceptions(exception, aopLoggersProperties.getIgnoreExceptions());
+  }
+
+  private boolean matchesIgnoreExceptions(
+      final Throwable exception, final Class<? extends Throwable>[] ignoredExceptions) {
+    if (ignoredExceptions == null || ignoredExceptions.length == 0) {
+      return false;
+    }
+    for (Class<? extends Throwable> ignoredException : ignoredExceptions) {
+      if (ignoredException == null) {
+        continue;
+      }
+      if (ignoredException.isInstance(exception)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void logExcitedAbnormallyMessage(
+      final JoinPoint joinPoint,
+      final LogAfterThrowing annotation,
+      final Logger logger,
+      final StringSupplierLookup stringLookup,
+      final Throwable exception) {
+    JOIN_POINT_STRING_SUPPLIER_REGISTRAR.register(stringLookup, joinPoint);
+    EXCEPTION_STRING_SUPPLIER_REGISTRAR.register(stringLookup, exception);
+
+    final String message =
+        STRING_SUBSTITUTOR.substitute(
+            getMessageTemplate(
+                annotation.exitedAbnormallyMessage(),
+                aopLoggersProperties.getExitedAbnormallyMessage()),
+            stringLookup);
+    LOGGER_SERVICE.log(logger, annotation.level(), message);
+  }
+
+  private String getMessageTemplate(
+      final String messageTemplate, final String defaultMessageTemplate) {
+    return messageTemplate.length() > 0 ? messageTemplate : defaultMessageTemplate;
+  }
+}
