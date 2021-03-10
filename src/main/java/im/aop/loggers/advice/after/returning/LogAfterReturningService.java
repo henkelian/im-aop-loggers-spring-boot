@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.Level;
 import im.aop.loggers.logging.LoggerService;
 import im.aop.loggers.logging.message.JoinPointStringSupplierRegistrar;
 import im.aop.loggers.logging.message.ReturnValueStringSupplierRegistrar;
@@ -34,13 +34,15 @@ public class LogAfterReturningService {
   public void log(
       final JoinPoint joinPoint, final LogAfterReturning annotation, final Object returnValue) {
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
-    if (isDisabled() || isLoggerLevelDisabled(logger, annotation.level())) {
+    final Level exitedLevel = getExitedLevel(annotation.level());
+    if (isDisabled() || isLoggerLevelDisabled(logger, exitedLevel)) {
       return;
     }
 
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
-    logExitedMessage(joinPoint, annotation, logger, stringLookup, returnValue);
+    logExitedMessage(
+        joinPoint, exitedLevel, annotation.exitedMessage(), logger, stringLookup, returnValue);
   }
 
   private boolean isDisabled() {
@@ -53,7 +55,8 @@ public class LogAfterReturningService {
 
   private void logExitedMessage(
       final JoinPoint joinPoint,
-      final LogAfterReturning annotation,
+      final Level exitedLevel,
+      final String exitedMessage,
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final Object returnValue) {
@@ -61,14 +64,15 @@ public class LogAfterReturningService {
     RETURN_VALUE_STRING_SUPPLIER_REGISTRAR.register(stringLookup, joinPoint, returnValue);
 
     final String message =
-        STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(annotation.exitedMessage(), aopLoggersProperties.getExitedMessage()),
-            stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+        STRING_SUBSTITUTOR.substitute(getExitedMessage(exitedMessage), stringLookup);
+    LOGGER_SERVICE.log(logger, exitedLevel, message);
   }
 
-  private String getMessageTemplate(
-      final String messageTemplate, final String defaultMessageTemplate) {
-    return messageTemplate.length() > 0 ? messageTemplate : defaultMessageTemplate;
+  private Level getExitedLevel(final Level exitedLevel) {
+    return exitedLevel == Level.DEFAULT ? aopLoggersProperties.getExitedLevel() : exitedLevel;
+  }
+
+  private String getExitedMessage(final String exitedMessage) {
+    return exitedMessage.length() == 0 ? aopLoggersProperties.getExitedMessage() : exitedMessage;
   }
 }

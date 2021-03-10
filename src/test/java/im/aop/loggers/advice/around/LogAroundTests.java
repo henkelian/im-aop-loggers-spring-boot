@@ -3,9 +3,9 @@ package im.aop.loggers.advice.around;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.advice.before.LogBefore;
+import im.aop.loggers.logging.Level;
 
 /**
  * Tests for {@link LogAround}.
@@ -38,7 +38,7 @@ class LogAroundTests {
     class Local {};
 
     final LogAround annotation = Local.class.getAnnotation(LogAround.class);
-    assertThat(annotation.level()).isEqualTo(Level.INFO);
+    assertThat(annotation.level()).isEqualTo(Level.DEFAULT);
   }
 
   @Test
@@ -92,7 +92,7 @@ class LogAroundTests {
     class Local {};
 
     final LogAround annotation = Local.class.getAnnotation(LogAround.class);
-    assertThat(annotation.exitedAbnormallyLevel()).isEqualTo(Level.ERROR);
+    assertThat(annotation.exitedAbnormallyLevel()).isEqualTo(Level.DEFAULT);
   }
 
   @Test

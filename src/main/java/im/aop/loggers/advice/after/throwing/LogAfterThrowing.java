@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.slf4j.event.Level;
+import im.aop.loggers.logging.Level;
 
 /**
  * Log after leaving the target method by throwing an exception.
@@ -20,7 +20,7 @@ public @interface LogAfterThrowing {
 
   Class<?> declaringClass() default void.class;
 
-  Level level() default Level.ERROR;
+  Level level() default Level.DEFAULT;
 
   Class<? extends Throwable>[] ignoreExceptions() default {};
 

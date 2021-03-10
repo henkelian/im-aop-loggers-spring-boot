@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.Level;
 import im.aop.loggers.logging.LoggerService;
 import im.aop.loggers.logging.message.JoinPointStringSupplierRegistrar;
 import im.aop.loggers.logging.message.StringSubstitutor;
@@ -29,13 +29,15 @@ public class LogBeforeService {
 
   public void log(final JoinPoint joinPoint, final LogBefore annotation) {
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
-    if (isDisabled() || isLoggerLevelDisabled(logger, annotation.level())) {
+    final Level enteringLevel = getEnteringLevel(annotation.level());
+    if (isDisabled() || isLoggerLevelDisabled(logger, enteringLevel)) {
       return;
     }
 
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
-    logEnteringMessage(joinPoint, annotation, logger, stringLookup);
+    logEnteringMessage(
+        joinPoint, enteringLevel, annotation.enteringMessage(), logger, stringLookup);
   }
 
   private boolean isDisabled() {
@@ -48,22 +50,25 @@ public class LogBeforeService {
 
   private void logEnteringMessage(
       final JoinPoint joinPoint,
-      final LogBefore annotation,
+      final Level enteringLevel,
+      final String enteringMessage,
       final Logger logger,
       final StringSupplierLookup stringLookup) {
     JOIN_POINT_STRING_SUPPLIER_REGISTRAR.register(stringLookup, joinPoint);
 
     final String message =
-        STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(
-                annotation.enteringMessage(), aopLoggersProperties.getEnteringMessage()),
-            stringLookup);
+        STRING_SUBSTITUTOR.substitute(getEnteringMesage(enteringMessage), stringLookup);
 
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+    LOGGER_SERVICE.log(logger, enteringLevel, message);
   }
 
-  private String getMessageTemplate(
-      final String messageTemplate, final String defaultMessageTemplate) {
-    return messageTemplate.length() > 0 ? messageTemplate : defaultMessageTemplate;
+  private Level getEnteringLevel(final Level enteringLevel) {
+    return enteringLevel == Level.DEFAULT ? aopLoggersProperties.getEnteringLevel() : enteringLevel;
+  }
+
+  private String getEnteringMesage(final String enteringMessage) {
+    return enteringMessage.length() == 0
+        ? aopLoggersProperties.getEnteringMessage()
+        : enteringMessage;
   }
 }

@@ -3,7 +3,8 @@ package im.aop.loggers.advice.before;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.event.Level;
+
+import im.aop.loggers.logging.Level;
 
 /**
  * Tests for {@link LogBefore}.
@@ -36,7 +37,7 @@ class LogBeforeTests {
     class Local {};
 
     final LogBefore annotation = Local.class.getAnnotation(LogBefore.class);
-    assertThat(annotation.level()).isEqualTo(Level.INFO);
+    assertThat(annotation.level()).isEqualTo(Level.DEFAULT);
   }
 
   @Test

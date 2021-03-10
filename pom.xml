@@ -12,7 +12,6 @@
 	<artifactId>im-aop-loggers-spring-boot</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 
-  <name>I'm AOP Loggers for Spring Boot</name>
   <inceptionYear>2021</inceptionYear>
 
   <licenses>
@@ -66,7 +65,25 @@
 
 	<build>
 		<plugins>
-
+    
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/.keep</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/.keep</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>

@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
+import im.aop.loggers.logging.Level;
+
 /**
  * Tests for {@link AopLoggersProperties}.
  *
@@ -43,12 +45,32 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
+  void enteringLevel_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getEnteringLevel()).isEqualTo(Level.DEBUG);
+        });
+  }
+
+  @Test
+  void enteringLevel_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=TRACE")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getEnteringLevel()).isEqualTo(Level.TRACE);
+            });
+  }
+
+  @Test
   void enteringMessage_defaultValue() {
     runner.run(
         (context) -> {
           final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
           assertThat(properties.getEnteringMessage())
-              .isEqualTo(AopLoggersProperties.DEFAULT_ENTERING_MESSAGE);
+              .isEqualTo("Entering [{method}] with parameters [{parameters}]");
         });
   }
 
@@ -64,12 +86,32 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
+  void exitedLevel_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getExitedLevel()).isEqualTo(Level.DEBUG);
+        });
+  }
+
+  @Test
+  void exitedLevel_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-level=TRACE")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getExitedLevel()).isEqualTo(Level.TRACE);
+            });
+  }
+
+  @Test
   void exitedMessage_defaultValue() {
     runner.run(
         (context) -> {
           final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
           assertThat(properties.getExitedMessage())
-              .isEqualTo(AopLoggersProperties.DEFAULT_EXITED_MESSAGE);
+              .isEqualTo("[{method}] exited normally with return value [{return-value}]");
         });
   }
 
@@ -85,12 +127,32 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
+  void exitedAbnormallyLevel_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getExitedAbnormallyLevel()).isEqualTo(Level.ERROR);
+        });
+  }
+
+  @Test
+  void exitedAbnormallyLevel_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-level=TRACE")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getExitedAbnormallyLevel()).isEqualTo(Level.TRACE);
+            });
+  }
+
+  @Test
   void exitedAbnormallyMessage_defaultValue() {
     runner.run(
         (context) -> {
           final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
           assertThat(properties.getExitedAbnormallyMessage())
-              .isEqualTo(AopLoggersProperties.DEFAULT_EXITED_ABNORMALLY_MESSAGE);
+              .isEqualTo("[{method}] exited abnormally with exception [{exception}]");
         });
   }
 
@@ -106,12 +168,31 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
+  void elapsedLevel_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getElapsedLevel()).isEqualTo(Level.DEBUG);
+        });
+  }
+
+  @Test
+  void elapsedLevel_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-level=TRACE")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getElapsedLevel()).isEqualTo(Level.TRACE);
+            });
+  }
+
+  @Test
   void elapsedMessage_defaultValue() {
     runner.run(
         (context) -> {
           final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
-          assertThat(properties.getElapsedMessage())
-              .isEqualTo(AopLoggersProperties.DEFAULT_ELAPSED_MESSAGE);
+          assertThat(properties.getElapsedMessage()).isEqualTo("[{method}] elapsed [{elapsed}]");
         });
   }
 

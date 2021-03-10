@@ -3,7 +3,6 @@ package im.aop.loggers.logging;
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 
 public class LoggerService {
 
@@ -47,6 +46,8 @@ public class LoggerService {
         break;
       case ERROR:
         logger.error(message);
+        break;
+      default:
         break;
     }
   }

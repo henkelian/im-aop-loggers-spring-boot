@@ -9,7 +9,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.event.Level;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -19,6 +18,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.Level;
 
 /**
  * Tests for {@link LogBeforeService}.
@@ -53,22 +53,45 @@ class LogBeforeServiceTests {
   }
 
   @Test
-  void logEnteringMessage(final CapturedOutput capturedOutput) {
-    runner.run(
-        (context) -> {
-          final LogBefore annotation = mockLogBefore(Level.INFO, "");
-          LoggingSystem.get(ClassLoader.getSystemClassLoader())
-              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+  void logEnteringMessage_defaultLevel(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=DEBUG")
+        .run(
+            (context) -> {
+              final LogBefore annotation = mockLogBefore(Level.DEFAULT);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
-          final LogBeforeService service = context.getBean(LogBeforeService.class);
-          service.log(joinPoint, annotation);
+              final LogBeforeService service = context.getBean(LogBeforeService.class);
+              service.log(joinPoint, annotation);
 
-          assertThat(capturedOutput)
-              .contains(
-                  "INFO "
-                      + Foo.class.getName()
-                      + " - Entering [void foo()] with parameters [none]");
-        });
+              assertThat(capturedOutput)
+                  .contains(
+                      "DEBUG "
+                          + Foo.class.getName()
+                          + " - Entering [void foo()] with parameters [none]");
+            });
+  }
+
+  @Test
+  void logEnteringMessage_customLevel(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=DEBUG")
+        .run(
+            (context) -> {
+              final LogBefore annotation = mockLogBefore(Level.INFO);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
+
+              final LogBeforeService service = context.getBean(LogBeforeService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput)
+                  .contains(
+                      "INFO "
+                          + Foo.class.getName()
+                          + " - Entering [void foo()] with parameters [none]");
+            });
   }
 
   @Test
@@ -77,7 +100,7 @@ class LogBeforeServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
             (context) -> {
-              final LogBefore annotation = mockLogBefore(Level.INFO, "");
+              final LogBefore annotation = mockLogBefore(Level.INFO);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
@@ -112,11 +135,12 @@ class LogBeforeServiceTests {
     return joinPoint;
   }
 
-  private LogBefore mockLogBefore(final Level level, final String enteringMessage) {
+  private LogBefore mockLogBefore(final Level level) {
     final LogBefore annotation = mock(LogBefore.class);
 
     when(annotation.level()).thenReturn(level);
-    when(annotation.enteringMessage()).thenReturn(enteringMessage);
+
+    when(annotation.enteringMessage()).thenReturn("");
 
     return annotation;
   }

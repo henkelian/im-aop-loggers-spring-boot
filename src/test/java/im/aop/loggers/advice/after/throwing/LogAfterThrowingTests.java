@@ -3,9 +3,9 @@ package im.aop.loggers.advice.after.throwing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.advice.before.LogBefore;
+import im.aop.loggers.logging.Level;
 
 /**
  * Tests for {@link LogAfterThrowing}.
@@ -38,7 +38,7 @@ class LogAfterThrowingThrowingTests {
     class Local {};
 
     final LogAfterThrowing annotation = Local.class.getAnnotation(LogAfterThrowing.class);
-    assertThat(annotation.level()).isEqualTo(Level.ERROR);
+    assertThat(annotation.level()).isEqualTo(Level.DEFAULT);
   }
 
   @Test

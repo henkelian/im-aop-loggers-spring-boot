@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.Level;
 import im.aop.loggers.logging.LoggerService;
 import im.aop.loggers.logging.message.ElapsedStringSupplierRegistrar;
 import im.aop.loggers.logging.message.ExceptionStringSupplierRegistrar;
@@ -103,18 +103,19 @@ public class LogAroundService {
       final LogAround annotation,
       final Logger logger,
       final StringSupplierLookup stringLookup) {
-    if (isLoggerLevelDisabled(logger, annotation.level())) {
+    final Level enteringLevel =
+        getLevel(annotation.level(), aopLoggersProperties.getEnteringLevel());
+    if (isLoggerLevelDisabled(logger, enteringLevel)) {
       return;
     }
 
     JOIN_POINT_STRING_SUPPLIER_REGISTRAR.register(stringLookup, joinPoint);
 
-    final String message =
+    final String enteringMessage =
         STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(
-                annotation.enteringMessage(), aopLoggersProperties.getEnteringMessage()),
+            getMessage(annotation.enteringMessage(), aopLoggersProperties.getEnteringMessage()),
             stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+    LOGGER_SERVICE.log(logger, enteringLevel, enteringMessage);
   }
 
   private void logElapsedTime(
@@ -123,18 +124,18 @@ public class LogAroundService {
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final long elapsedTime) {
-    if (isLoggerLevelDisabled(logger, annotation.level())) {
+    final Level elapsedLevel = getLevel(annotation.level(), aopLoggersProperties.getElapsedLevel());
+    if (isLoggerLevelDisabled(logger, elapsedLevel)) {
       return;
     }
 
     ELAPSED_STRING_SUPPLIER_REGISTRAR.register(stringLookup, elapsedTime);
 
-    final String message =
+    final String elapsedMessage =
         STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(
-                annotation.elapsedMessage(), aopLoggersProperties.getElapsedMessage()),
+            getMessage(annotation.elapsedMessage(), aopLoggersProperties.getElapsedMessage()),
             stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+    LOGGER_SERVICE.log(logger, elapsedLevel, elapsedMessage);
   }
 
   private void logExitedMessage(
@@ -143,17 +144,18 @@ public class LogAroundService {
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final Object returnValue) {
-    if (isLoggerLevelDisabled(logger, annotation.level())) {
+    final Level exitedLevel = getLevel(annotation.level(), aopLoggersProperties.getExitedLevel());
+    if (isLoggerLevelDisabled(logger, exitedLevel)) {
       return;
     }
 
     RETURN_VALUE_STRING_SUPPLIER_REGISTRAR.register(stringLookup, joinPoint, returnValue);
 
-    final String message =
+    final String exitedMessage =
         STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(annotation.exitedMessage(), aopLoggersProperties.getExitedMessage()),
+            getMessage(annotation.exitedMessage(), aopLoggersProperties.getExitedMessage()),
             stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+    LOGGER_SERVICE.log(logger, exitedLevel, exitedMessage);
   }
 
   private void logExitedAbnormallyMessage(
@@ -162,24 +164,30 @@ public class LogAroundService {
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final Throwable exception) {
-    if (isLoggerLevelDisabled(logger, annotation.exitedAbnormallyLevel())
+    final Level exitedAbnormallyLevel =
+        getLevel(
+            annotation.exitedAbnormallyLevel(), aopLoggersProperties.getExitedAbnormallyLevel());
+    if (isLoggerLevelDisabled(logger, exitedAbnormallyLevel)
         || isIgnoredException(exception, annotation.ignoreExceptions())) {
       return;
     }
 
     EXCEPTION_STRING_SUPPLIER_REGISTRAR.register(stringLookup, exception);
 
-    final String message =
+    final String exitedAbnormallyMessage =
         STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(
+            getMessage(
                 annotation.exitedAbnormallyMessage(),
                 aopLoggersProperties.getExitedAbnormallyMessage()),
             stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.exitedAbnormallyLevel(), message);
+    LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, exitedAbnormallyMessage);
   }
 
-  private String getMessageTemplate(
-      final String messageTemplate, final String defaultMessageTemplate) {
-    return messageTemplate.length() > 0 ? messageTemplate : defaultMessageTemplate;
+  private Level getLevel(final Level level, final Level defaultLevel) {
+    return level == Level.DEFAULT ? defaultLevel : level;
+  }
+
+  private String getMessage(final String message, final String defaultMessage) {
+    return message.length() > 0 ? message : defaultMessage;
   }
 }

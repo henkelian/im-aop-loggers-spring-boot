@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.slf4j.event.Level;
+import im.aop.loggers.logging.Level;
 
 /**
  * Log after leaving the target method normally.
@@ -20,7 +20,7 @@ public @interface LogAfterReturning {
 
   Class<?> declaringClass() default void.class;
 
-  Level level() default Level.INFO;
+  Level level() default Level.DEFAULT;
 
   String exitedMessage() default "";
 }

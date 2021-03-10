@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
-import org.slf4j.event.Level;
 
 import im.aop.loggers.AopLoggersProperties;
+import im.aop.loggers.logging.Level;
 import im.aop.loggers.logging.LoggerService;
 import im.aop.loggers.logging.message.ExceptionStringSupplierRegistrar;
 import im.aop.loggers.logging.message.JoinPointStringSupplierRegistrar;
@@ -34,15 +34,22 @@ public class LogAfterThrowingService {
   public void log(
       final JoinPoint joinPoint, final LogAfterThrowing annotation, final Throwable exception) {
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
+    final Level exitedAbnormallyLevel = getExitedAbnormallyLevel(annotation.level());
     if (isDisabled()
-        || isLoggerLevelDisabled(logger, annotation.level())
+        || isLoggerLevelDisabled(logger, exitedAbnormallyLevel)
         || isIgnoredException(exception, annotation.ignoreExceptions())) {
       return;
     }
 
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
-    logExcitedAbnormallyMessage(joinPoint, annotation, logger, stringLookup, exception);
+    logExitedAbnormallyMessage(
+        joinPoint,
+        exitedAbnormallyLevel,
+        annotation.exitedAbnormallyMessage(),
+        logger,
+        stringLookup,
+        exception);
   }
 
   private boolean isDisabled() {
@@ -79,9 +86,10 @@ public class LogAfterThrowingService {
     return false;
   }
 
-  private void logExcitedAbnormallyMessage(
+  private void logExitedAbnormallyMessage(
       final JoinPoint joinPoint,
-      final LogAfterThrowing annotation,
+      final Level exitedAbnormallyLevel,
+      final String exitedAbnormallyMessage,
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final Throwable exception) {
@@ -90,15 +98,19 @@ public class LogAfterThrowingService {
 
     final String message =
         STRING_SUBSTITUTOR.substitute(
-            getMessageTemplate(
-                annotation.exitedAbnormallyMessage(),
-                aopLoggersProperties.getExitedAbnormallyMessage()),
-            stringLookup);
-    LOGGER_SERVICE.log(logger, annotation.level(), message);
+            getExitedAbnormallyMessage(exitedAbnormallyMessage), stringLookup);
+    LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, message);
   }
 
-  private String getMessageTemplate(
-      final String messageTemplate, final String defaultMessageTemplate) {
-    return messageTemplate.length() > 0 ? messageTemplate : defaultMessageTemplate;
+  private Level getExitedAbnormallyLevel(final Level exitedAbnormallyLevel) {
+    return exitedAbnormallyLevel == Level.DEFAULT
+        ? aopLoggersProperties.getExitedAbnormallyLevel()
+        : exitedAbnormallyLevel;
+  }
+
+  private String getExitedAbnormallyMessage(final String exitedAbnormallyMessage) {
+    return exitedAbnormallyMessage.length() == 0
+        ? aopLoggersProperties.getExitedAbnormallyMessage()
+        : exitedAbnormallyMessage;
   }
 }

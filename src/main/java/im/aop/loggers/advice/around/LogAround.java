@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.slf4j.event.Level;
+import im.aop.loggers.logging.Level;
 
 /**
  * Log before entering and after leaving the target method, regardless of leaving normally or
@@ -21,13 +21,13 @@ public @interface LogAround {
 
   Class<?> declaringClass() default void.class;
 
-  Level level() default Level.INFO;
+  Level level() default Level.DEFAULT;
 
   String enteringMessage() default "";
 
   String exitedMessage() default "";
 
-  Level exitedAbnormallyLevel() default Level.ERROR;
+  Level exitedAbnormallyLevel() default Level.DEFAULT;
 
   String exitedAbnormallyMessage() default "";
 

@@ -10,7 +10,6 @@ import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.event.Level;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -21,6 +20,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import im.aop.loggers.AopLoggersProperties;
 import im.aop.loggers.advice.after.returning.LogAfterReturningService;
+import im.aop.loggers.logging.Level;
 
 /**
  * Tests for {@link LogAfterReturningService}.
@@ -55,22 +55,47 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage(final CapturedOutput capturedOutput) {
-    runner.run(
-        (context) -> {
-          final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "", null);
-          LoggingSystem.get(ClassLoader.getSystemClassLoader())
-              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+  void logExitedAbnormallyMessage_defaultLevel(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-level=WARN")
+        .run(
+            (context) -> {
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.DEFAULT, null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
-          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException("foo"));
+              final LogAfterThrowingService service =
+                  context.getBean(LogAfterThrowingService.class);
+              service.log(joinPoint, annotation, new RuntimeException("foo"));
 
-          assertThat(capturedOutput)
-              .contains(
-                  "ERROR "
-                      + Foo.class.getName()
-                      + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
-        });
+              assertThat(capturedOutput)
+                  .contains(
+                      "WARN "
+                          + Foo.class.getName()
+                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+            });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_customLevel(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-level=WARN")
+        .run(
+            (context) -> {
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAfterThrowingService service =
+                  context.getBean(LogAfterThrowingService.class);
+              service.log(joinPoint, annotation, new RuntimeException("foo"));
+
+              assertThat(capturedOutput)
+                  .contains(
+                      "ERROR "
+                          + Foo.class.getName()
+                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+            });
   }
 
   @Test
@@ -79,7 +104,7 @@ class LogAfterThrowingServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
             (context) -> {
-              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "", null);
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
@@ -102,7 +127,7 @@ class LogAfterThrowingServiceTests {
             AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
         .run(
             (context) -> {
-              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "", null);
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
@@ -123,7 +148,7 @@ class LogAfterThrowingServiceTests {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
-              mockLogAfterThrowing(Level.ERROR, "", Arrays.array(RuntimeException.class));
+              mockLogAfterThrowing(Level.ERROR, Arrays.array(RuntimeException.class));
           LoggingSystem.get(ClassLoader.getSystemClassLoader())
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
@@ -143,7 +168,7 @@ class LogAfterThrowingServiceTests {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
-              mockLogAfterThrowing(Level.ERROR, "", Arrays.array(ClassNotFoundException.class));
+              mockLogAfterThrowing(Level.ERROR, Arrays.array(ClassNotFoundException.class));
           LoggingSystem.get(ClassLoader.getSystemClassLoader())
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
@@ -181,13 +206,13 @@ class LogAfterThrowingServiceTests {
 
   private LogAfterThrowing mockLogAfterThrowing(
       final Level level,
-      final String exitedAbnormallyMessage,
       final Class<? extends Throwable>[] ignoreExceptions) {
     final LogAfterThrowing annotation = mock(LogAfterThrowing.class);
 
     when(annotation.level()).thenReturn(level);
-    when(annotation.exitedAbnormallyMessage()).thenReturn(exitedAbnormallyMessage);
     when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
+
+    when(annotation.exitedAbnormallyMessage()).thenReturn("");
 
     return annotation;
   }
