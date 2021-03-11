@@ -228,4 +228,44 @@ class LogAfterReturningAdviceTests {
                   .doesNotContain("returnedValue=" + TestClassContext.class.getName());
             });
   }
+
+  @Test
+  void codeCoverage_publicMethod() {
+    runner.run(
+        (context) -> {
+          final LogAfterReturningAdvice logAfterReturningAdvice =
+              context.getBean(LogAfterReturningAdvice.class);
+          logAfterReturningAdvice.publicMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_toStringMethod() {
+    runner.run(
+        (context) -> {
+          final LogAfterReturningAdvice logAfterReturningAdvice =
+              context.getBean(LogAfterReturningAdvice.class);
+          logAfterReturningAdvice.toStringMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_logAfterReturningMethodContext() {
+    runner.run(
+        (context) -> {
+          final LogAfterReturningAdvice logAfterReturningAdvice =
+              context.getBean(LogAfterReturningAdvice.class);
+          logAfterReturningAdvice.logAfterReturningMethodContext(null);
+        });
+  }
+
+  @Test
+  void codeCoverage_logAfterReturningClassContext() {
+    runner.run(
+        (context) -> {
+          final LogAfterReturningAdvice logAfterReturningAdvice =
+              context.getBean(LogAfterReturningAdvice.class);
+          logAfterReturningAdvice.logAfterReturningClassContext(null);
+        });
+  }
 }

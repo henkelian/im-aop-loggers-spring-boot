@@ -58,18 +58,14 @@ class LogBeforeServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=DEBUG")
         .run(
             (context) -> {
-              final LogBefore annotation = mockLogBefore(Level.DEFAULT);
+              final LogBefore annotation = mockLogBefore(Level.DEFAULT, "foo");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "DEBUG "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -79,40 +75,79 @@ class LogBeforeServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=DEBUG")
         .run(
             (context) -> {
-              final LogBefore annotation = mockLogBefore(Level.INFO);
+              final LogBefore annotation = mockLogBefore(Level.INFO, "foo");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logEnteringMessage_isDisabled(final CapturedOutput capturedOutput) {
+  void logEnteringMessage_defaultMessage(final CapturedOutput capturedOutput) {
     runner
-        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-message=foo")
         .run(
             (context) -> {
-              final LogBefore annotation = mockLogBefore(Level.INFO);
+              final LogBefore annotation = mockLogBefore(Level.INFO, "");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logEnteringMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogBefore annotation = mockLogBefore(Level.INFO, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogBeforeService service = context.getBean(LogBeforeService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logEnteringMessage_disabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogBefore annotation = mockLogBefore(Level.INFO, "foo");
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogBeforeService service = context.getBean(LogBeforeService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logEnteringMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogBefore annotation = mockLogBefore(Level.DEBUG, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogBeforeService service = context.getBean(LogBeforeService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+        });
   }
 
   private MethodSignature mockMethodSignature(
@@ -135,12 +170,11 @@ class LogBeforeServiceTests {
     return joinPoint;
   }
 
-  private LogBefore mockLogBefore(final Level level) {
+  private LogBefore mockLogBefore(final Level level, final String message) {
     final LogBefore annotation = mock(LogBefore.class);
 
     when(annotation.level()).thenReturn(level);
-
-    when(annotation.enteringMessage()).thenReturn("");
+    when(annotation.enteringMessage()).thenReturn(message);
 
     return annotation;
   }

@@ -213,4 +213,40 @@ class LogBeforeAdviceTests {
                       "execution(String " + TestClassContext.class.getName() + ".toString())");
             });
   }
+
+  @Test
+  void codeCoverage_publicMethod() {
+    runner.run(
+        (context) -> {
+          final LogBeforeAdvice logBeforeAdvice = context.getBean(LogBeforeAdvice.class);
+          logBeforeAdvice.publicMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_toStringMethod() {
+    runner.run(
+        (context) -> {
+          final LogBeforeAdvice logBeforeAdvice = context.getBean(LogBeforeAdvice.class);
+          logBeforeAdvice.toStringMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_logBeforeMethodContext() {
+    runner.run(
+        (context) -> {
+          final LogBeforeAdvice logBeforeAdvice = context.getBean(LogBeforeAdvice.class);
+          logBeforeAdvice.logBeforeMethodContext(null);
+        });
+  }
+
+  @Test
+  void codeCoverage_logBeforeClassContext() {
+    runner.run(
+        (context) -> {
+          final LogBeforeAdvice logBeforeAdvice = context.getBean(LogBeforeAdvice.class);
+          logBeforeAdvice.logBeforeClassContext(null);
+        });
+  }
 }

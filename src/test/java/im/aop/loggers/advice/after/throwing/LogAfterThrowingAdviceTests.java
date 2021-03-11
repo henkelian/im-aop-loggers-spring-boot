@@ -233,4 +233,44 @@ class LogAfterThrowingAdviceTests {
                   .doesNotContain("thrownException=" + RuntimeException.class.getName());
             });
   }
+
+  @Test
+  void codeCoverage_publicMethod() {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowingAdvice logAfterThrowingAdvice =
+              context.getBean(LogAfterThrowingAdvice.class);
+          logAfterThrowingAdvice.publicMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_toStringMethod() {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowingAdvice logAfterThrowingAdvice =
+              context.getBean(LogAfterThrowingAdvice.class);
+          logAfterThrowingAdvice.toStringMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_logAfterThrowingMethodContext() {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowingAdvice logAfterThrowingAdvice =
+              context.getBean(LogAfterThrowingAdvice.class);
+          logAfterThrowingAdvice.logAfterThrowingMethodContext(null);
+        });
+  }
+
+  @Test
+  void codeCoverage_logAfterThrowingClassContext() {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowingAdvice logAfterThrowingAdvice =
+              context.getBean(LogAfterThrowingAdvice.class);
+          logAfterThrowingAdvice.logAfterThrowingClassContext(null);
+        });
+  }
 }

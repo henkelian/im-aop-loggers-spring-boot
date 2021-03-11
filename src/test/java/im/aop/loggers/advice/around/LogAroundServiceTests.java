@@ -61,18 +61,14 @@ class LogAroundServiceTests {
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.DEFAULT, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.DEFAULT, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "DEBUG "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -84,42 +80,87 @@ class LogAroundServiceTests {
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.INFO, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logEnteringMessage_isDisabled(final CapturedOutput capturedOutput) {
+  void logEnteringMessage_defaultMessage(final CapturedOutput capturedOutput) {
     runner
-        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-message=foo")
         .run(
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.INFO, Level.ERROR, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - Entering [void foo()] with parameters [none]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logEnteringMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenReturn("foo");
+
+          final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logEnteringMessage_disabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              when(joinPoint.proceed()).thenReturn("foo");
+
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logEnteringMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenReturn("foo");
+
+          final LogAround annotation = mockLogAround(Level.DEBUG, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
+        });
   }
 
   @Test
@@ -130,18 +171,14 @@ class LogAroundServiceTests {
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.DEFAULT, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.DEFAULT, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "DEBUG "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -153,42 +190,87 @@ class LogAroundServiceTests {
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.INFO, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logExitedMessage_isDisabled(final CapturedOutput capturedOutput) {
+  void logExitedMessage_defaultMessage(final CapturedOutput capturedOutput) {
     runner
-        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-message=foo")
         .run(
             (context) -> {
               when(joinPoint.proceed()).thenReturn("foo");
 
-              final LogAround annotation = mockLogAround(Level.INFO, Level.ERROR, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logExitedMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenReturn("foo");
+
+          final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logExitedMessage_disabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              when(joinPoint.proceed()).thenReturn("foo");
+
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logExitedMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenReturn("foo");
+
+          final LogAround annotation = mockLogAround(Level.DEBUG, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
+        });
   }
 
   @Test
@@ -199,18 +281,14 @@ class LogAroundServiceTests {
             (context) -> {
               when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
 
-              final LogAround annotation = mockLogAround(Level.DEFAULT, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.DEFAULT, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "DEBUG "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -220,44 +298,89 @@ class LogAroundServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-level=DEBUG")
         .run(
             (context) -> {
-              when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+              when(joinPoint.proceed()).thenThrow(new RuntimeException());
 
-              final LogAround annotation = mockLogAround(Level.DEFAULT, Level.WARN, null);
-              LoggingSystem.get(ClassLoader.getSystemClassLoader())
-                  .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
-
-              final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
-
-              assertThat(capturedOutput)
-                  .contains(
-                      "WARN "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
-            });
-  }
-
-  @Test
-  void logExitedAbnormallyMessage_isDisabled(final CapturedOutput capturedOutput) {
-    runner
-        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
-        .run(
-            (context) -> {
-              when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
-
-              final LogAround annotation = mockLogAround(Level.INFO, Level.ERROR, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "ERROR "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_defaultMessage(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-message=foo")
+        .run(
+            (context) -> {
+              when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+              final LogAround annotation = mockLogAround(Level.INFO, "", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_disabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+
+              final LogAround annotation = mockLogAround(Level.ERROR, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation = mockLogAround(Level.DEBUG, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
+        });
   }
 
   @Test
@@ -267,64 +390,90 @@ class LogAroundServiceTests {
             AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
         .run(
             (context) -> {
-              when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+              when(joinPoint.proceed()).thenThrow(new RuntimeException());
 
-              final LogAround annotation = mockLogAround(Level.INFO, Level.ERROR, null);
+              final LogAround annotation =
+                  mockLogAroundForExitAbnormally(Level.DEFAULT, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "ERROR "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+              assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logExitedAbnormallyMessage_locallyIgnoreException(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_locallyIgnoredException(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
-          when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
 
           final LogAround annotation =
-              mockLogAround(Level.INFO, Level.ERROR, Arrays.array(RuntimeException.class));
+              mockLogAroundForExitAbnormally(
+                  Level.DEFAULT, "foo", Arrays.array(RuntimeException.class));
           LoggingSystem.get(ClassLoader.getSystemClassLoader())
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
           service.log(joinPoint, annotation);
 
-          assertThat(capturedOutput)
-              .doesNotContain(
-                  "ERROR "
-                      + Foo.class.getName()
-                      + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+          assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
         });
   }
 
   @Test
-  void logExitedAbnormallyMessage_notIgnoreException(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_nonIgnoredException(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
-          when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
 
           final LogAround annotation =
-              mockLogAround(Level.INFO, Level.ERROR, Arrays.array(ClassNotFoundException.class));
+              mockLogAround(Level.ERROR, "foo", Arrays.array(ClassNotFoundException.class));
           LoggingSystem.get(ClassLoader.getSystemClassLoader())
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
           service.log(joinPoint, annotation);
 
-          assertThat(capturedOutput)
-              .contains(
-                  "ERROR "
-                      + Foo.class.getName()
-                      + " - [void foo()] exited abnormally with exception [type=RuntimeException, message=foo]");
+          assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_emptyIgnoredExceptions(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation = mockLogAround(Level.ERROR, "foo", Arrays.array());
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_ignoredExceptionsContainNull(
+      final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation =
+              mockLogAround(Level.ERROR, "foo", Arrays.array((Class<Exception>) null));
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
   }
 
@@ -334,15 +483,14 @@ class LogAroundServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-level=DEBUG")
         .run(
             (context) -> {
-              final LogAround annotation = mockLogAround(Level.DEFAULT, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.DEFAULT, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains("DEBUG " + Foo.class.getName() + " - [void foo()] elapsed [PT");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -352,34 +500,79 @@ class LogAroundServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-level=DEBUG")
         .run(
             (context) -> {
-              final LogAround annotation = mockLogAround(Level.INFO, Level.DEFAULT, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .contains("INFO " + Foo.class.getName() + " - [void foo()] elapsed [PT");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logElapsedMessage_isDisabled(final CapturedOutput capturedOutput) {
+  void logElapsedMessage_defaultMessage(final CapturedOutput capturedOutput) {
     runner
-        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-message=foo")
         .run(
             (context) -> {
-              final LogAround annotation = mockLogAround(Level.INFO, Level.ERROR, null);
+              final LogAround annotation = mockLogAround(Level.INFO, "", null);
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
               service.log(joinPoint, annotation);
 
-              assertThat(capturedOutput)
-                  .doesNotContain("INFO " + Foo.class.getName() + " - [void foo()] elapsed [PT");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logElapsedMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void logElapsedMessage_disabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogAround annotation = mockLogAround(Level.INFO, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.log(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logElapsedMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAround annotation = mockLogAround(Level.DEBUG, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
+        });
   }
 
   private MethodSignature mockMethodSignature(
@@ -405,18 +598,34 @@ class LogAroundServiceTests {
 
   private LogAround mockLogAround(
       final Level level,
-      final Level exitedAbnormallyLevel,
+      final String message,
       final Class<? extends Throwable>[] ignoreExceptions) {
     final LogAround annotation = mock(LogAround.class);
 
     when(annotation.level()).thenReturn(level);
-    when(annotation.exitedAbnormallyLevel()).thenReturn(exitedAbnormallyLevel);
+    when(annotation.exitedAbnormallyLevel()).thenReturn(level);
+    when(annotation.enteringMessage()).thenReturn(message);
+    when(annotation.exitedMessage()).thenReturn(message);
+    when(annotation.exitedAbnormallyMessage()).thenReturn(message);
+    when(annotation.elapsedMessage()).thenReturn(message);
     when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
 
+    return annotation;
+  }
+
+  private LogAround mockLogAroundForExitAbnormally(
+      final Level level,
+      final String message,
+      final Class<? extends Throwable>[] ignoreExceptions) {
+    final LogAround annotation = mock(LogAround.class);
+
+    when(annotation.level()).thenReturn(Level.DEFAULT);
+    when(annotation.exitedAbnormallyLevel()).thenReturn(level);
     when(annotation.enteringMessage()).thenReturn("");
     when(annotation.exitedMessage()).thenReturn("");
-    when(annotation.exitedAbnormallyMessage()).thenReturn("");
+    when(annotation.exitedAbnormallyMessage()).thenReturn(message);
     when(annotation.elapsedMessage()).thenReturn("");
+    when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
 
     return annotation;
   }

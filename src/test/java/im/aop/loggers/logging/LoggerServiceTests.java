@@ -100,6 +100,12 @@ class LoggerServiceTests {
   }
 
   @Test
+  void isEnabled_givenLevelEqualsDefault() {
+    final Logger logger = LoggerFactory.getLogger("foo");
+    assertThat(LOGGER_SERVICE.isEnabled(logger, Level.DEFAULT)).isFalse();
+  }
+
+  @Test
   @ExtendWith(OutputCaptureExtension.class)
   void log_givenLevelEqualsTrace(final CapturedOutput capturedOutput) {
     LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.TRACE);
@@ -147,6 +153,16 @@ class LoggerServiceTests {
     final Logger logger = LoggerFactory.getLogger("foo");
     LOGGER_SERVICE.log(logger, Level.ERROR, "foo");
     assertThat(capturedOutput).containsOnlyOnce("ERROR foo - foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void log_givenLevelEqualsDefault(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.DEBUG);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.log(logger, Level.DEFAULT, "foo");
+    assertThat(capturedOutput).doesNotContain("foo - foo");
   }
 
   private MethodSignature mockMethodSignature(

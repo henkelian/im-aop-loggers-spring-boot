@@ -45,6 +45,15 @@ class ReturnValueStringSupplierRegistrarTests {
     assertThat(stringSupplierLookup.lookup("return-value")).isEqualTo("none");
   }
 
+  @Test
+  void returnValue_stringArray() throws NoSuchMethodException, SecurityException {
+    final JoinPoint joinPoint = mockJoinPoint(mockMethodSignature(String[].class));
+
+    final StringSupplierLookup stringSupplierLookup = new StringSupplierLookup();
+    REGISTRAR.register(stringSupplierLookup, joinPoint, new String[] {"foo", "bar"});
+    assertThat(stringSupplierLookup.lookup("return-value")).isEqualTo("[foo, bar]");
+  }
+
   private MethodSignature mockMethodSignature(final Class<?> returnType)
       throws NoSuchMethodException {
     final MethodSignature methodSignature = mock(MethodSignature.class);

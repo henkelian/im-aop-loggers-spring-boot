@@ -214,4 +214,40 @@ class LogAroundAdviceTests {
                       "execution(String " + TestClassContext.class.getName() + ".toString())");
             });
   }
+
+  @Test
+  void codeCoverage_publicMethod() {
+    runner.run(
+        (context) -> {
+          final LogAroundAdvice logAroundAdvice = context.getBean(LogAroundAdvice.class);
+          logAroundAdvice.publicMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_toStringMethod() {
+    runner.run(
+        (context) -> {
+          final LogAroundAdvice logAroundAdvice = context.getBean(LogAroundAdvice.class);
+          logAroundAdvice.toStringMethod();
+        });
+  }
+
+  @Test
+  void codeCoverage_logAroundMethodContext() {
+    runner.run(
+        (context) -> {
+          final LogAroundAdvice logAroundAdvice = context.getBean(LogAroundAdvice.class);
+          logAroundAdvice.logAroundMethodContext(null);
+        });
+  }
+
+  @Test
+  void codeCoverage_logAroundClassContext() {
+    runner.run(
+        (context) -> {
+          final LogAroundAdvice logAroundAdvice = context.getBean(LogAroundAdvice.class);
+          logAroundAdvice.logAroundClassContext(null);
+        });
+  }
 }

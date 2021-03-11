@@ -63,4 +63,22 @@ class StringSubstitutorTests {
     final String result = STRING_SUBSTITUTOR.substitute("foo {bar}} baz", STRING_LOOKUP);
     assertThat(result).isEqualTo("foo bar} baz");
   }
+
+  @Test
+  void substitute_nullTemplate() {
+    final String result = STRING_SUBSTITUTOR.substitute(null, STRING_LOOKUP);
+    assertThat(result).isNull();
+  }
+
+  @Test
+  void substitute_emptyTemplate() {
+    final String result = STRING_SUBSTITUTOR.substitute("", STRING_LOOKUP);
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void substitute_tokenNotFound() {
+    final String result = STRING_SUBSTITUTOR.substitute("{qux}", STRING_LOOKUP);
+    assertThat(result).isEmpty();
+  }
 }

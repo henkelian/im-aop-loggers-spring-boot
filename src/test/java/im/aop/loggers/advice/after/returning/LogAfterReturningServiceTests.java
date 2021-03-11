@@ -53,12 +53,45 @@ class LogAfterReturningServiceTests {
   }
 
   @Test
+  void logExitedMessage_defaultMessage(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-message=foo")
+        .run(
+            (context) -> {
+              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "");
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+              final LogAfterReturningService service =
+                  context.getBean(LogAfterReturningService.class);
+              service.log(joinPoint, annotation, "foo");
+
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+            });
+  }
+
+  @Test
+  void logExitedMessage_customMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
+          service.log(joinPoint, annotation, "foo");
+
+          assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
   void logExitedMessage_defaultLevel(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-level=DEBUG")
         .run(
             (context) -> {
-              final LogAfterReturning annotation = mockLogAfterReturning(Level.DEFAULT);
+              final LogAfterReturning annotation = mockLogAfterReturning(Level.DEFAULT, "foo");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
@@ -66,11 +99,7 @@ class LogAfterReturningServiceTests {
                   context.getBean(LogAfterReturningService.class);
               service.log(joinPoint, annotation, "foo");
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "DEBUG "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
   }
 
@@ -80,7 +109,7 @@ class LogAfterReturningServiceTests {
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-level=DEBUG")
         .run(
             (context) -> {
-              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO);
+              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "foo");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
@@ -88,21 +117,17 @@ class LogAfterReturningServiceTests {
                   context.getBean(LogAfterReturningService.class);
               service.log(joinPoint, annotation, "foo");
 
-              assertThat(capturedOutput)
-                  .contains(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
   }
 
   @Test
-  void logExitedMessage_isDisabled(final CapturedOutput capturedOutput) {
+  void logExitedMessage_disabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
             (context) -> {
-              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO);
+              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "foo");
               LoggingSystem.get(ClassLoader.getSystemClassLoader())
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
@@ -110,12 +135,23 @@ class LogAfterReturningServiceTests {
                   context.getBean(LogAfterReturningService.class);
               service.log(joinPoint, annotation, "foo");
 
-              assertThat(capturedOutput)
-                  .doesNotContain(
-                      "INFO "
-                          + Foo.class.getName()
-                          + " - [void foo()] exited normally with return value [foo]");
+              assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
+  }
+
+  @Test
+  void logExitedMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterReturning annotation = mockLogAfterReturning(Level.DEBUG, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
+          service.log(joinPoint, annotation, "foo");
+
+          assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+        });
   }
 
   private MethodSignature mockMethodSignature(
@@ -139,12 +175,11 @@ class LogAfterReturningServiceTests {
     return joinPoint;
   }
 
-  private LogAfterReturning mockLogAfterReturning(final Level level) {
+  private LogAfterReturning mockLogAfterReturning(final Level level, final String message) {
     final LogAfterReturning annotation = mock(LogAfterReturning.class);
 
     when(annotation.level()).thenReturn(level);
-
-    when(annotation.exitedMessage()).thenReturn("");
+    when(annotation.exitedMessage()).thenReturn(message);
 
     return annotation;
   }
