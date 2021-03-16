@@ -31,11 +31,11 @@ public class AopLoggersProperties {
   private String exitedAbnormallyMessage =
       "[{method}] exited abnormally with exception [{exception}]";
 
+  private Class<? extends Throwable>[] ignoreExceptions;
+
   @NotNull private Level elapsedLevel = Level.DEBUG;
 
   @NotBlank private String elapsedMessage = "[{method}] elapsed [{elapsed}]";
-
-  private Class<? extends Throwable>[] ignoreExceptions;
 
   public boolean isEnabled() {
     return enabled;
@@ -93,6 +93,14 @@ public class AopLoggersProperties {
     this.exitedAbnormallyMessage = exitedAbnormallyMessage;
   }
 
+  public Class<? extends Throwable>[] getIgnoreExceptions() {
+    return ignoreExceptions;
+  }
+
+  public void setIgnoreExceptions(Class<? extends Throwable>[] ignoreExceptions) {
+    this.ignoreExceptions = ignoreExceptions;
+  }
+
   public Level getElapsedLevel() {
     return elapsedLevel;
   }
@@ -107,13 +115,5 @@ public class AopLoggersProperties {
 
   public void setElapsedMessage(String elapsedMessage) {
     this.elapsedMessage = elapsedMessage;
-  }
-
-  public Class<? extends Throwable>[] getIgnoreExceptions() {
-    return ignoreExceptions;
-  }
-
-  public void setIgnoreExceptions(Class<? extends Throwable>[] ignoreExceptions) {
-    this.ignoreExceptions = ignoreExceptions;
   }
 }
