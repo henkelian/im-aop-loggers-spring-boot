@@ -123,6 +123,24 @@ class LogAroundTests {
   }
 
   @Test
+  void ignoreExceptions_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.ignoreExceptions()).isEmpty();
+  }
+
+  @Test
+  void ignoreExceptions_customValue() {
+    @LogAround(ignoreExceptions = {RuntimeException.class})
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.ignoreExceptions()).containsExactly(RuntimeException.class);
+  }
+
+  @Test
   void elapsedMessage_defaultValue() {
     @LogAround
     class Local {};

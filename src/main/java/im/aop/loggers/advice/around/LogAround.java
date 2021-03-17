@@ -31,7 +31,7 @@ public @interface LogAround {
 
   String exitedAbnormallyMessage() default "";
 
-  String elapsedMessage() default "";
-
   Class<? extends Throwable>[] ignoreExceptions() default {};
+
+  String elapsedMessage() default "";
 }
