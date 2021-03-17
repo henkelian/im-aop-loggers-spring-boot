@@ -168,6 +168,27 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
+  void ignoreExceptions_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getIgnoreExceptions()).isNull();
+        });
+  }
+
+  @Test
+  void ignoreExceptions_withPropertyValue() {
+    runner
+        .withPropertyValues(
+            AopLoggersProperties.PREFIX + ".ignore-exceptions[0]=java.lang.RuntimeException")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getIgnoreExceptions()).containsExactly(RuntimeException.class);
+            });
+  }
+
+  @Test
   void elapsedLevel_defaultValue() {
     runner.run(
         (context) -> {
@@ -204,27 +225,6 @@ class AopLoggersPropertiesTests {
             (context) -> {
               final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
               assertThat(properties.getElapsedMessage()).isEqualTo("foo");
-            });
-  }
-
-  @Test
-  void ignoreExceptions_defaultValue() {
-    runner.run(
-        (context) -> {
-          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
-          assertThat(properties.getIgnoreExceptions()).isNull();
-        });
-  }
-
-  @Test
-  void ignoreExceptions_withPropertyValue() {
-    runner
-        .withPropertyValues(
-            AopLoggersProperties.PREFIX + ".ignore-exceptions[0]=java.lang.RuntimeException")
-        .run(
-            (context) -> {
-              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
-              assertThat(properties.getIgnoreExceptions()).containsExactly(RuntimeException.class);
             });
   }
 }
