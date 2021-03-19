@@ -60,16 +60,16 @@ public class LogAroundService {
       final Object returnValue = joinPoint.proceed();
 
       final long elapsedTime = System.nanoTime() - beforeTime;
+      logExitedMessage(joinPoint, logAround, logger, stringLookup, returnValue);
       logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
       logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
-      logExitedMessage(joinPoint, logAround, logger, stringLookup, returnValue);
 
     } catch (Throwable e) {
 
       final long elapsedTime = System.nanoTime() - beforeTime;
+      logExitedAbnormallyMessage(joinPoint, logAround, logger, stringLookup, e);
       logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
       logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
-      logExitedAbnormallyMessage(joinPoint, logAround, logger, stringLookup, e);
     }
   }
 

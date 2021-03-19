@@ -673,6 +673,96 @@ class LogAroundServiceTests {
   }
 
   @Test
+  void logElapsedMessage_afterExitedMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAround annotation =
+              mockLogAroundForExitedAndElapsed(Level.INFO, "exited", "elapsed");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput)
+              .containsSubsequence(
+                  "INFO " + Foo.class.getName() + " - exited",
+                  "INFO " + Foo.class.getName() + " - elapsed");
+        });
+  }
+
+  private LogAround mockLogAroundForExitedAndElapsed(
+      final Level level, final String exitedMessage, final String elapsedMessage) {
+    final LogAround annotation = mock(LogAround.class);
+
+    when(annotation.level()).thenReturn(level);
+    when(annotation.exitedMessage()).thenReturn(exitedMessage);
+    when(annotation.elapsedMessage()).thenReturn(elapsedMessage);
+
+    when(annotation.exitedAbnormallyLevel()).thenReturn(Level.TRACE);
+    when(annotation.elapsedWarningLevel()).thenReturn(Level.TRACE);
+
+    when(annotation.enteringMessage()).thenReturn("");
+    when(annotation.exitedAbnormallyMessage()).thenReturn("");
+    when(annotation.elapsedWarningMessage()).thenReturn("");
+
+    when(annotation.ignoreExceptions()).thenReturn(null);
+
+    when(annotation.elapsedTimeLimit()).thenReturn(0L);
+    when(annotation.elapsedTimeUnit()).thenReturn(ChronoUnit.MILLIS);
+
+    return annotation;
+  }
+
+  @Test
+  void logElapsedMessage_afterExitedAbnormallyMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+
+          final LogAround annotation =
+              mockLogAroundForExitedAbnormallyAndElapsed(
+                  Level.INFO, Level.ERROR, "exited-abnormally", "elapsed");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput)
+              .containsSubsequence(
+                  "ERROR " + Foo.class.getName() + " - exited-abnormally",
+                  "INFO " + Foo.class.getName() + " - elapsed");
+        });
+  }
+
+  private LogAround mockLogAroundForExitedAbnormallyAndElapsed(
+      final Level level,
+      final Level exitedAbnormallyLevel,
+      final String exitedAbnormallyMessage,
+      final String elapsedMessage) {
+    final LogAround annotation = mock(LogAround.class);
+
+    when(annotation.level()).thenReturn(level);
+    when(annotation.exitedAbnormallyLevel()).thenReturn(exitedAbnormallyLevel);
+    when(annotation.exitedAbnormallyMessage()).thenReturn(exitedAbnormallyMessage);
+    when(annotation.elapsedMessage()).thenReturn(elapsedMessage);
+
+    when(annotation.elapsedWarningLevel()).thenReturn(Level.TRACE);
+
+    when(annotation.enteringMessage()).thenReturn("");
+    when(annotation.exitedMessage()).thenReturn("");
+    when(annotation.elapsedWarningMessage()).thenReturn("");
+
+    when(annotation.ignoreExceptions()).thenReturn(null);
+
+    when(annotation.elapsedTimeLimit()).thenReturn(0L);
+    when(annotation.elapsedTimeUnit()).thenReturn(ChronoUnit.MILLIS);
+
+    return annotation;
+  }
+
+  @Test
   void logElapsedWarningMessage_defaultLevel(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-warning-level=DEBUG")
@@ -793,6 +883,54 @@ class LogAroundServiceTests {
     when(annotation.exitedMessage()).thenReturn("");
     when(annotation.exitedAbnormallyMessage()).thenReturn("");
     when(annotation.elapsedMessage()).thenReturn("");
+
+    when(annotation.ignoreExceptions()).thenReturn(null);
+
+    return annotation;
+  }
+
+  @Test
+  void logElapsedWarningMessage_afterElapsedMessage(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAround annotation =
+              mockLogAroundForElapsedAndElapsedWarning(
+                  Level.INFO, "elapsed", Level.WARN, "elapsed-warning", 1, ChronoUnit.NANOS);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput)
+              .containsSubsequence(
+                  "INFO " + Foo.class.getName() + " - elapsed",
+                  "WARN " + Foo.class.getName() + " - elapsed-warning");
+        });
+  }
+
+  private LogAround mockLogAroundForElapsedAndElapsedWarning(
+      final Level level,
+      final String elapsedMessage,
+      final Level elapsedWarningLevel,
+      final String elapsedWarningMessage,
+      final long elapsedTimeLimit,
+      final ChronoUnit elapsedTimeUnit) {
+    final LogAround annotation = mock(LogAround.class);
+
+    when(annotation.level()).thenReturn(level);
+    when(annotation.elapsedMessage()).thenReturn(elapsedMessage);
+
+    when(annotation.elapsedWarningLevel()).thenReturn(elapsedWarningLevel);
+    when(annotation.elapsedWarningMessage()).thenReturn(elapsedWarningMessage);
+    when(annotation.elapsedTimeLimit()).thenReturn(elapsedTimeLimit);
+    when(annotation.elapsedTimeUnit()).thenReturn(elapsedTimeUnit);
+
+    when(annotation.exitedAbnormallyLevel()).thenReturn(Level.TRACE);
+
+    when(annotation.enteringMessage()).thenReturn("");
+    when(annotation.exitedMessage()).thenReturn("");
+    when(annotation.exitedAbnormallyMessage()).thenReturn("");
 
     when(annotation.ignoreExceptions()).thenReturn(null);
 
