@@ -12,6 +12,8 @@
 	<artifactId>im-aop-loggers-spring-boot</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 
+  <name>I'm AOP Loggers for Spring Boot</name>
+  <description>A handy and configurable sets of annotation-based loggers for Spring Boot that can log every execution of a method when entering or exiting normally or abnormally, without you writing a single line of code using aspect-oriented programming (AOP)</description>
   <inceptionYear>2021</inceptionYear>
 
   <licenses>
