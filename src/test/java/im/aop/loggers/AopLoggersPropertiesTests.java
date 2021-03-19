@@ -227,4 +227,45 @@ class AopLoggersPropertiesTests {
               assertThat(properties.getElapsedMessage()).isEqualTo("foo");
             });
   }
+
+  @Test
+  void elapsedWarningLevel_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getElapsedWarningLevel()).isEqualTo(Level.WARN);
+        });
+  }
+
+  @Test
+  void elapsedWarningLevel_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-warning-level=TRACE")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getElapsedWarningLevel()).isEqualTo(Level.TRACE);
+            });
+  }
+
+  @Test
+  void elapsedWarningMessage_defaultValue() {
+    runner.run(
+        (context) -> {
+          final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+          assertThat(properties.getElapsedWarningMessage())
+              .isEqualTo("[{method}] reached elapsed time limit [{elapsed-time-limit}]");
+        });
+  }
+
+  @Test
+  void elapsedWarningMessage_withPropertyValue() {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-warning-message=foo")
+        .run(
+            (context) -> {
+              final AopLoggersProperties properties = context.getBean(AopLoggersProperties.class);
+              assertThat(properties.getElapsedWarningMessage()).isEqualTo("foo");
+            });
+  }
 }

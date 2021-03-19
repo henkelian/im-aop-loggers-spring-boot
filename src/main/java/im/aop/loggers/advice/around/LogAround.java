@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.temporal.ChronoUnit;
 
 import im.aop.loggers.logging.Level;
 
@@ -34,4 +35,12 @@ public @interface LogAround {
   Class<? extends Throwable>[] ignoreExceptions() default {};
 
   String elapsedMessage() default "";
+
+  Level elapsedWarningLevel() default Level.DEFAULT;
+
+  String elapsedWarningMessage() default "";
+
+  long elapsedTimeLimit() default 0;
+
+  ChronoUnit elapsedTimeUnit() default ChronoUnit.MILLIS;
 }

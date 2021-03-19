@@ -2,6 +2,8 @@ package im.aop.loggers.advice.around;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.temporal.ChronoUnit;
+
 import org.junit.jupiter.api.Test;
 
 import im.aop.loggers.advice.before.LogBefore;
@@ -156,5 +158,77 @@ class LogAroundTests {
 
     final LogAround annotation = Local.class.getAnnotation(LogAround.class);
     assertThat(annotation.elapsedMessage()).isEqualTo("foo");
+  }
+
+  @Test
+  void elapsedWarningLevel_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedWarningLevel()).isEqualTo(Level.DEFAULT);
+  }
+
+  @Test
+  void elapsedWarningLevel_customValue() {
+    @LogAround(elapsedWarningLevel = Level.DEBUG)
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedWarningLevel()).isEqualTo(Level.DEBUG);
+  }
+
+  @Test
+  void elapsedWarningMessage_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedWarningMessage()).isEmpty();
+  }
+
+  @Test
+  void elapsedWarningMessage_customValue() {
+    @LogAround(elapsedWarningMessage = "foo")
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedWarningMessage()).isEqualTo("foo");
+  }
+
+  @Test
+  void elapsedTimeLimit_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedTimeLimit()).isZero();
+  }
+
+  @Test
+  void elapsedTimeLimit_customValue() {
+    @LogAround(elapsedTimeLimit = 1)
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedTimeLimit()).isOne();
+  }
+
+  @Test
+  void elapsedTimeUnit_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedTimeUnit()).isEqualTo(ChronoUnit.MILLIS);
+  }
+
+  @Test
+  void elapsedTimeUnit_customValue() {
+    @LogAround(elapsedTimeUnit = ChronoUnit.SECONDS)
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.elapsedTimeUnit()).isEqualTo(ChronoUnit.SECONDS);
   }
 }

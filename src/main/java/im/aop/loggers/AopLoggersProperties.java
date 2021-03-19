@@ -37,6 +37,12 @@ public class AopLoggersProperties {
 
   @NotBlank private String elapsedMessage = "[{method}] elapsed [{elapsed}]";
 
+  @NotNull private Level elapsedWarningLevel = Level.WARN;
+
+  @NotBlank
+  private String elapsedWarningMessage =
+      "[{method}] reached elapsed time limit [{elapsed-time-limit}]";
+
   public boolean isEnabled() {
     return enabled;
   }
@@ -115,5 +121,21 @@ public class AopLoggersProperties {
 
   public void setElapsedMessage(String elapsedMessage) {
     this.elapsedMessage = elapsedMessage;
+  }
+
+  public Level getElapsedWarningLevel() {
+    return elapsedWarningLevel;
+  }
+
+  public void setElapsedWarningLevel(Level elapsedWarningLevel) {
+    this.elapsedWarningLevel = elapsedWarningLevel;
+  }
+
+  public String getElapsedWarningMessage() {
+    return elapsedWarningMessage;
+  }
+
+  public void setElapsedWarningMessage(String elapsedWarningMessage) {
+    this.elapsedWarningMessage = elapsedWarningMessage;
   }
 }
