@@ -267,6 +267,13 @@ Values configured with annotation attributes has `higher priority` over configur
 
 ---
 
+If, for any reason, you need to disable `I'm AOP Loggers`, you can set the following property in `application.properties`:
+```properties
+im.aop.loggers.enabled = false
+```
+
+---
+
 # I'm AOP Loggers for Spring Boot Demo
 
 A demo Spring Boot application for `I'm AOP Loggers for Spring Boot` is available [here](https://github.com/henkelian/im-aop-loggers-spring-boot-demo).
