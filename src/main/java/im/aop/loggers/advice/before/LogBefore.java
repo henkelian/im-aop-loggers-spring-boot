@@ -18,9 +18,24 @@ import im.aop.loggers.logging.Level;
 @Documented
 public @interface LogBefore {
 
+  /**
+   * Class name used as Logger's category name
+   *
+   * @return
+   */
   Class<?> declaringClass() default void.class;
 
+  /**
+   * Log Level for entering message
+   *
+   * @return
+   */
   Level level() default Level.DEFAULT;
 
+  /**
+   * Entering message template
+   *
+   * @return
+   */
   String enteringMessage() default "";
 }

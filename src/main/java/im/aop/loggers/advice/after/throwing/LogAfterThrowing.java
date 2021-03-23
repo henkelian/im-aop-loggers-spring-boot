@@ -18,11 +18,31 @@ import im.aop.loggers.logging.Level;
 @Documented
 public @interface LogAfterThrowing {
 
+  /**
+   * Class name used as Logger's category name
+   *
+   * @return
+   */
   Class<?> declaringClass() default void.class;
 
+  /**
+   * Log Level for exited abnormally message
+   *
+   * @return
+   */
   Level level() default Level.DEFAULT;
 
+  /**
+   * Exceptions that will be ignored by Logger
+   *
+   * @return
+   */
   Class<? extends Throwable>[] ignoreExceptions() default {};
 
+  /**
+   * Exited abnormally message template
+   *
+   * @return
+   */
   String exitedAbnormallyMessage() default "";
 }
