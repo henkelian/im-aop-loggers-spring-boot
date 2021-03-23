@@ -51,4 +51,27 @@ public class LoggerService {
         break;
     }
   }
+
+  public void logException(
+      final Logger logger, final Level level, final String message, final Throwable exception) {
+    switch (level) {
+      case TRACE:
+        logger.trace(message, exception);
+        break;
+      case DEBUG:
+        logger.debug(message, exception);
+        break;
+      case WARN:
+        logger.warn(message, exception);
+        break;
+      case INFO:
+        logger.info(message, exception);
+        break;
+      case ERROR:
+        logger.error(message, exception);
+        break;
+      default:
+        break;
+    }
+  }
 }

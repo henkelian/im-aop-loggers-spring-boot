@@ -44,12 +44,7 @@ public class LogAfterThrowingService {
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
     logExitedAbnormallyMessage(
-        joinPoint,
-        exitedAbnormallyLevel,
-        annotation.exitedAbnormallyMessage(),
-        logger,
-        stringLookup,
-        exception);
+        joinPoint, exitedAbnormallyLevel, annotation, logger, stringLookup, exception);
   }
 
   private boolean isDisabled() {
@@ -89,7 +84,7 @@ public class LogAfterThrowingService {
   private void logExitedAbnormallyMessage(
       final JoinPoint joinPoint,
       final Level exitedAbnormallyLevel,
-      final String exitedAbnormallyMessage,
+      final LogAfterThrowing annotation,
       final Logger logger,
       final StringSupplierLookup stringLookup,
       final Throwable exception) {
@@ -98,8 +93,13 @@ public class LogAfterThrowingService {
 
     final String message =
         STRING_SUBSTITUTOR.substitute(
-            getExitedAbnormallyMessage(exitedAbnormallyMessage), stringLookup);
-    LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, message);
+            getExitedAbnormallyMessage(annotation.exitedAbnormallyMessage()), stringLookup);
+
+    if (annotation.printStackTrace()) {
+      LOGGER_SERVICE.logException(logger, exitedAbnormallyLevel, message, exception);
+    } else {
+      LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, message);
+    }
   }
 
   private Level getExitedAbnormallyLevel(final Level exitedAbnormallyLevel) {

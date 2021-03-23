@@ -33,6 +33,13 @@ public @interface LogAfterThrowing {
   Level level() default Level.DEFAULT;
 
   /**
+   * Exited abnormally message template
+   *
+   * @return
+   */
+  String exitedAbnormallyMessage() default "";
+
+  /**
    * Exceptions that will be ignored by Logger
    *
    * @return
@@ -40,9 +47,9 @@ public @interface LogAfterThrowing {
   Class<? extends Throwable>[] ignoreExceptions() default {};
 
   /**
-   * Exited abnormally message template
+   * Whether to print exception and its backtrace
    *
    * @return
    */
-  String exitedAbnormallyMessage() default "";
+  boolean printStackTrace() default true;
 }

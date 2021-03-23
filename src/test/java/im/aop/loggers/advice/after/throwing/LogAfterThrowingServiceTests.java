@@ -255,6 +255,66 @@ class LogAfterThrowingServiceTests {
         });
   }
 
+  private LogAfterThrowing mockLogAfterThrowing(
+      final Level level,
+      final String message,
+      final Class<? extends Throwable>[] ignoreExceptions) {
+    final LogAfterThrowing annotation = mock(LogAfterThrowing.class);
+
+    when(annotation.level()).thenReturn(level);
+    when(annotation.exitedAbnormallyMessage()).thenReturn(message);
+    when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
+    when(annotation.printStackTrace()).thenReturn(true);
+
+    return annotation;
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_enablePrintStackTrace(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowing annotation = mockLogAfterThrowing(Level.INFO, "foo", true);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
+          service.log(joinPoint, annotation, new RuntimeException("foo"));
+
+          assertThat(capturedOutput)
+              .containsSubsequence(
+                  "INFO " + Foo.class.getName() + " - foo", "java.lang.RuntimeException: foo");
+        });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_disablePrintStackTrace(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowing annotation = mockLogAfterThrowing(Level.INFO, "foo", false);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
+          service.log(joinPoint, annotation, new RuntimeException("foo"));
+
+          assertThat(capturedOutput)
+              .contains("INFO " + Foo.class.getName() + " - foo")
+              .doesNotContain("java.lang.RuntimeException: foo");
+        });
+  }
+
+  private LogAfterThrowing mockLogAfterThrowing(
+      final Level level, final String message, final boolean printStackTrace) {
+    final LogAfterThrowing annotation = mock(LogAfterThrowing.class);
+
+    when(annotation.level()).thenReturn(level);
+    when(annotation.exitedAbnormallyMessage()).thenReturn(message);
+    when(annotation.ignoreExceptions()).thenReturn(null);
+    when(annotation.printStackTrace()).thenReturn(printStackTrace);
+
+    return annotation;
+  }
+
   private MethodSignature mockMethodSignature(
       final Class<?> declaringClass, final String methodName, Class<?>... methodParameterTypes)
       throws NoSuchMethodException {
@@ -274,18 +334,5 @@ class LogAfterThrowingServiceTests {
     when(joinPoint.getSignature()).thenReturn(methodSignature);
 
     return joinPoint;
-  }
-
-  private LogAfterThrowing mockLogAfterThrowing(
-      final Level level,
-      final String message,
-      final Class<? extends Throwable>[] ignoreExceptions) {
-    final LogAfterThrowing annotation = mock(LogAfterThrowing.class);
-
-    when(annotation.level()).thenReturn(level);
-    when(annotation.exitedAbnormallyMessage()).thenReturn(message);
-    when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
-
-    return annotation;
   }
 }

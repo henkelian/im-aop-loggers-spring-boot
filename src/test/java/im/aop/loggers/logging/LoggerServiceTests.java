@@ -165,6 +165,78 @@ class LoggerServiceTests {
     assertThat(capturedOutput).doesNotContain("foo - foo");
   }
 
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsTrace(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.TRACE);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.TRACE, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .containsOnlyOnce("TRACE foo - foo")
+        .containsSubsequence("TRACE foo - foo", "java.lang.RuntimeException: foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsDebug(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.DEBUG);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.DEBUG, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .containsOnlyOnce("DEBUG foo - foo")
+        .containsSubsequence("DEBUG foo - foo", "java.lang.RuntimeException: foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsInfo(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.INFO);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.INFO, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .containsOnlyOnce("INFO foo - foo")
+        .containsSubsequence("INFO foo - foo", "java.lang.RuntimeException: foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsWarn(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.WARN);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.WARN, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .containsOnlyOnce("WARN foo - foo")
+        .containsSubsequence("WARN foo - foo", "java.lang.RuntimeException: foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsError(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.ERROR);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.ERROR, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .containsOnlyOnce("ERROR foo - foo")
+        .containsSubsequence("ERROR foo - foo", "java.lang.RuntimeException: foo");
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void logException_givenLevelEqualsDefault(final CapturedOutput capturedOutput) {
+    LoggingSystem.get(ClassLoader.getSystemClassLoader()).setLogLevel("foo", LogLevel.DEBUG);
+
+    final Logger logger = LoggerFactory.getLogger("foo");
+    LOGGER_SERVICE.logException(logger, Level.DEFAULT, "foo", new RuntimeException("foo"));
+    assertThat(capturedOutput)
+        .doesNotContain("foo - foo")
+        .doesNotContain("java.lang.RuntimeException: foo");
+  }
+
   private MethodSignature mockMethodSignature(
       final Class<?> declaringClass, final String methodName, Class<?>... methodParameterTypes)
       throws NoSuchMethodException {

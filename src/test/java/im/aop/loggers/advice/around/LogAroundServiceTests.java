@@ -545,6 +545,71 @@ class LogAroundServiceTests {
     when(annotation.elapsedWarningMessage()).thenReturn("");
 
     when(annotation.ignoreExceptions()).thenReturn(ignoreExceptions);
+    when(annotation.printStackTrace()).thenReturn(true);
+
+    when(annotation.elapsedTimeLimit()).thenReturn(0L);
+    when(annotation.elapsedTimeUnit()).thenReturn(ChronoUnit.MILLIS);
+
+    return annotation;
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_enablePrintStackTrace(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
+
+          final LogAround annotation = mockLogAroundForExitAbnormally(Level.INFO, "foo", true);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput)
+              .containsSubsequence(
+                  "INFO " + Foo.class.getName() + " - foo", "java.lang.RuntimeException: foo");
+        });
+  }
+
+  @Test
+  void logExitedAbnormallyMessage_disablePrintStackTrace(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation = mockLogAroundForExitAbnormally(Level.INFO, "foo", false);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.log(joinPoint, annotation);
+
+          assertThat(capturedOutput)
+              .contains("INFO " + Foo.class.getName() + " - foo")
+              .doesNotContain("java.lang.RuntimeException: foo");
+        });
+  }
+
+  private LogAround mockLogAroundForExitAbnormally(
+      final Level exitedAbnormallyLevel,
+      final String exitAbnormallyMessage,
+      final boolean printStackTrace) {
+    final LogAround annotation = mock(LogAround.class);
+
+    when(annotation.exitedAbnormallyLevel()).thenReturn(exitedAbnormallyLevel);
+    when(annotation.exitedAbnormallyMessage()).thenReturn(exitAbnormallyMessage);
+
+    when(annotation.level()).thenReturn(Level.TRACE);
+    when(annotation.elapsedWarningLevel()).thenReturn(Level.TRACE);
+
+    when(annotation.enteringMessage()).thenReturn("");
+    when(annotation.exitedMessage()).thenReturn("");
+    when(annotation.elapsedMessage()).thenReturn("");
+    when(annotation.elapsedWarningMessage()).thenReturn("");
+
+    when(annotation.ignoreExceptions()).thenReturn(null);
+    when(annotation.printStackTrace()).thenReturn(printStackTrace);
 
     when(annotation.elapsedTimeLimit()).thenReturn(0L);
     when(annotation.elapsedTimeUnit()).thenReturn(ChronoUnit.MILLIS);

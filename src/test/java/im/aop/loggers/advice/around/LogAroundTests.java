@@ -143,6 +143,24 @@ class LogAroundTests {
   }
 
   @Test
+  void printStackTrace_defaultValue() {
+    @LogAround
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.printStackTrace()).isTrue();
+  }
+
+  @Test
+  void printStackTrace_customValue() {
+    @LogAround(printStackTrace = false)
+    class Local {};
+
+    final LogAround annotation = Local.class.getAnnotation(LogAround.class);
+    assertThat(annotation.printStackTrace()).isFalse();
+  }
+
+  @Test
   void elapsedMessage_defaultValue() {
     @LogAround
     class Local {};

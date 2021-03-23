@@ -222,7 +222,13 @@ public class LogAroundService {
                 annotation.exitedAbnormallyMessage(),
                 aopLoggersProperties.getExitedAbnormallyMessage()),
             stringLookup);
-    LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, exitedAbnormallyMessage);
+
+    if (annotation.printStackTrace()) {
+      LOGGER_SERVICE.logException(
+          logger, exitedAbnormallyLevel, exitedAbnormallyMessage, exception);
+    } else {
+      LOGGER_SERVICE.log(logger, exitedAbnormallyLevel, exitedAbnormallyMessage);
+    }
   }
 
   private Level getLevel(final Level level, final Level defaultLevel) {

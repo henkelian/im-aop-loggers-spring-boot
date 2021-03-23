@@ -85,4 +85,22 @@ class LogAfterThrowingThrowingTests {
     final LogAfterThrowing annotation = Local.class.getAnnotation(LogAfterThrowing.class);
     assertThat(annotation.ignoreExceptions()).containsExactly(RuntimeException.class);
   }
+
+  @Test
+  void printStackTrace_defaultValue() {
+    @LogAfterThrowing
+    class Local {};
+
+    final LogAfterThrowing annotation = Local.class.getAnnotation(LogAfterThrowing.class);
+    assertThat(annotation.printStackTrace()).isTrue();
+  }
+
+  @Test
+  void printStackTrace_customValue() {
+    @LogAfterThrowing(printStackTrace = false)
+    class Local {};
+
+    final LogAfterThrowing annotation = Local.class.getAnnotation(LogAfterThrowing.class);
+    assertThat(annotation.printStackTrace()).isFalse();
+  }
 }

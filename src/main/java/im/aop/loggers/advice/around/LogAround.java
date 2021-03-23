@@ -70,6 +70,13 @@ public @interface LogAround {
   Class<? extends Throwable>[] ignoreExceptions() default {};
 
   /**
+   * Whether to print exception and its backtrace
+   *
+   * @return
+   */
+  boolean printStackTrace() default true;
+
+  /**
    * Elapsed message template
    *
    * @return
