@@ -18,24 +18,12 @@ import im.aop.loggers.logging.Level;
 @Documented
 public @interface LogAfterReturning {
 
-  /**
-   * Class name used as Logger's category name
-   *
-   * @return
-   */
+  /** @return Class name used as Logger's category name */
   Class<?> declaringClass() default void.class;
 
-  /**
-   * Log Level for exited message
-   *
-   * @return
-   */
+  /** @return Log Level for exited message */
   Level level() default Level.DEFAULT;
 
-  /**
-   * Exited message template
-   *
-   * @return
-   */
+  /** @return Exited message template */
   String exitedMessage() default "";
 }
