@@ -44,12 +44,13 @@ public class LogAroundService {
     this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
   }
 
-  public void log(final ProceedingJoinPoint joinPoint, final LogAround logAround) {
-    final Logger logger = LOGGER_SERVICE.getLogger(logAround.declaringClass(), joinPoint);
+  public Object log(final ProceedingJoinPoint joinPoint, final LogAround logAround)
+      throws Throwable {
     if (isDisabled()) {
-      return;
+      return joinPoint.proceed();
     }
 
+    final Logger logger = LOGGER_SERVICE.getLogger(logAround.declaringClass(), joinPoint);
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
     logEnteringMessage(joinPoint, logAround, logger, stringLookup);
@@ -64,12 +65,16 @@ public class LogAroundService {
       logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
       logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
 
+      return returnValue;
+
     } catch (Throwable e) {
 
       final long elapsedTime = System.nanoTime() - beforeTime;
       logExitedAbnormallyMessage(joinPoint, logAround, logger, stringLookup, e);
       logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
       logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
+
+      throw e;
     }
   }
 

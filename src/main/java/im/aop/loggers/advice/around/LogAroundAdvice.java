@@ -28,8 +28,9 @@ public class LogAroundAdvice {
   @Around(
       value = "publicMethod() && logAroundMethodContext(logAround)",
       argNames = "joinPoint, logAround")
-  void logAroundMethodContext(final ProceedingJoinPoint joinPoint, final LogAround logAround) {
-    logAround(joinPoint, logAround);
+  Object logAroundMethodContext(final ProceedingJoinPoint joinPoint, final LogAround logAround)
+      throws Throwable {
+    return logAround(joinPoint, logAround);
   }
 
   @Pointcut(value = "@within(logAround)", argNames = "logAround")
@@ -38,11 +39,13 @@ public class LogAroundAdvice {
   @Around(
       value = "publicMethod() && !toStringMethod() && logAroundClassContext(logAround)",
       argNames = "joinPoint, logAround")
-  void logAroundClassContext(final ProceedingJoinPoint joinPoint, final LogAround logAround) {
-    logAround(joinPoint, logAround);
+  Object logAroundClassContext(final ProceedingJoinPoint joinPoint, final LogAround logAround)
+      throws Throwable {
+    return logAround(joinPoint, logAround);
   }
 
-  protected void logAround(final ProceedingJoinPoint joinPoint, final LogAround logAround) {
-    logAroundService.log(joinPoint, logAround);
+  protected Object logAround(final ProceedingJoinPoint joinPoint, final LogAround logAround)
+      throws Throwable {
+    return logAroundService.log(joinPoint, logAround);
   }
 }

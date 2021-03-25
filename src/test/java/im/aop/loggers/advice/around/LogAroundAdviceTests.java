@@ -38,9 +38,11 @@ class LogAroundAdviceTests {
       return new LogAroundService(aopLoggersProperties) {
 
         @Override
-        public void log(ProceedingJoinPoint joinPoint, LogAround logAround) {
+        public Object log(ProceedingJoinPoint joinPoint, LogAround logAround) throws Throwable {
           LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringType())
               .info("{}", joinPoint);
+
+          return joinPoint.proceed();
         }
       };
     }
@@ -114,6 +116,17 @@ class LogAroundAdviceTests {
                       "execution(String "
                           + TestMethodContext.class.getName()
                           + ".methodWithResult())");
+            });
+  }
+
+  @Test
+  void methodWithResult_methodContext_willReturnValue(final CapturedOutput capturedOutput) {
+    runner
+        .withBean(TestMethodContext.class)
+        .run(
+            context -> {
+              final TestMethodContext methodContext = context.getBean(TestMethodContext.class);
+              assertThat(methodContext.methodWithResult()).isEqualTo("foo");
             });
   }
 
@@ -197,6 +210,17 @@ class LogAroundAdviceTests {
                       "execution(String "
                           + TestClassContext.class.getName()
                           + ".methodWithResult())");
+            });
+  }
+
+  @Test
+  void methodWithResult_classContext_willReturnValue(final CapturedOutput capturedOutput) {
+    runner
+        .withBean(TestClassContext.class)
+        .run(
+            context -> {
+              final TestClassContext classContext = context.getBean(TestClassContext.class);
+              assertThat(classContext.methodWithResult()).isEqualTo("foo");
             });
   }
 
