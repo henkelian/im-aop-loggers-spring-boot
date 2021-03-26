@@ -67,7 +67,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -84,7 +84,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -101,7 +101,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -116,7 +116,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -133,7 +133,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
@@ -148,7 +148,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
         });
@@ -165,7 +165,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThat(service.log(joinPoint, annotation)).isEqualTo("foo");
+          assertThat(service.logAround(joinPoint, annotation)).isEqualTo("foo");
         });
   }
 
@@ -182,7 +182,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThat(service.log(joinPoint, annotation)).isEqualTo("foo");
+              assertThat(service.logAround(joinPoint, annotation)).isEqualTo("foo");
             });
   }
 
@@ -221,7 +221,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -240,7 +240,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -259,7 +259,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -276,7 +276,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -295,7 +295,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
@@ -312,7 +312,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
         });
@@ -329,7 +329,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThat(service.log(joinPoint, annotation)).isEqualTo("foo");
+          assertThat(service.logAround(joinPoint, annotation)).isEqualTo("foo");
         });
   }
 
@@ -346,7 +346,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThat(service.log(joinPoint, annotation)).isEqualTo("foo");
+              assertThat(service.logAround(joinPoint, annotation)).isEqualTo("foo");
             });
   }
 
@@ -386,7 +386,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -405,7 +405,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -424,7 +424,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -441,7 +441,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -460,7 +460,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
               assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
             });
@@ -477,7 +477,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
         });
@@ -498,7 +498,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
               assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
             });
@@ -517,7 +517,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -536,7 +536,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -554,7 +554,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -574,7 +574,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -592,7 +592,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
         });
   }
 
@@ -610,7 +610,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+              assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
             });
   }
 
@@ -651,7 +651,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput)
               .containsSubsequence(
@@ -670,7 +670,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput)
               .contains("INFO " + Foo.class.getName() + " - foo")
@@ -715,7 +715,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -732,7 +732,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -749,7 +749,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -764,7 +764,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -781,7 +781,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
@@ -796,7 +796,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("DEBUG " + Foo.class.getName() + " - foo");
         });
@@ -834,7 +834,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput)
               .containsSubsequence(
@@ -879,7 +879,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          assertThrows(RuntimeException.class, () -> service.log(joinPoint, annotation));
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
 
           assertThat(capturedOutput)
               .containsSubsequence(
@@ -926,7 +926,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -944,7 +944,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -962,7 +962,7 @@ class LogAroundServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogAroundService service = context.getBean(LogAroundService.class);
-              service.log(joinPoint, annotation);
+              service.logAround(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -978,7 +978,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -994,7 +994,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
         });
@@ -1010,7 +1010,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
         });
@@ -1052,7 +1052,7 @@ class LogAroundServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
           final LogAroundService service = context.getBean(LogAroundService.class);
-          service.log(joinPoint, annotation);
+          service.logAround(joinPoint, annotation);
 
           assertThat(capturedOutput)
               .containsSubsequence(
@@ -1108,5 +1108,60 @@ class LogAroundServiceTests {
     when(joinPoint.getSignature()).thenReturn(methodSignature);
 
     return joinPoint;
+  }
+
+  @Test
+  void doesNotLogElapsed_whenDisabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogAround annotation = mockLogAroundForEntering(Level.INFO, "foo");
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(LogAroundService.class.getName(), LogLevel.DEBUG);
+
+              final LogAroundService service = context.getBean(LogAroundService.class);
+              service.logAround(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("[logAround] elapsed [");
+            });
+  }
+
+  @Test
+  void logElapsed_whenExitedNormally(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAround annotation = mockLogAroundForExitedNormally(Level.INFO, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAroundService.class.getName(), LogLevel.DEBUG);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          service.logAround(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("[logAround] elapsed [");
+        });
+  }
+
+  @Test
+  void logElapsed_whenExitedAbnormally(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          when(joinPoint.proceed()).thenThrow(new RuntimeException());
+
+          final LogAround annotation = mockLogAroundForExitAbnormally(Level.ERROR, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAroundService.class.getName(), LogLevel.DEBUG);
+
+          final LogAroundService service = context.getBean(LogAroundService.class);
+          assertThrows(RuntimeException.class, () -> service.logAround(joinPoint, annotation));
+
+          assertThat(capturedOutput).contains("[logAround] elapsed [");
+        });
   }
 }

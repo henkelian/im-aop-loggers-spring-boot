@@ -1,9 +1,11 @@
 package im.aop.loggers.advice.before;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import im.aop.loggers.AopLoggersProperties;
 import im.aop.loggers.logging.Level;
@@ -13,6 +15,8 @@ import im.aop.loggers.logging.message.StringSubstitutor;
 import im.aop.loggers.logging.message.StringSupplierLookup;
 
 public class LogBeforeService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogBeforeService.class);
 
   private static final LoggerService LOGGER_SERVICE = new LoggerService();
 
@@ -27,10 +31,17 @@ public class LogBeforeService {
     this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
   }
 
-  public void log(final JoinPoint joinPoint, final LogBefore annotation) {
+  public void logBefore(final JoinPoint joinPoint, final LogBefore annotation) {
+    if (isDisabled()) {
+      return;
+    }
+
+    final long enteringTime = System.nanoTime();
+
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
     final Level enteringLevel = getEnteringLevel(annotation.level());
-    if (isDisabled() || isLoggerLevelDisabled(logger, enteringLevel)) {
+    if (isLoggerLevelDisabled(logger, enteringLevel)) {
+      logElapsed(enteringTime);
       return;
     }
 
@@ -38,6 +49,11 @@ public class LogBeforeService {
 
     logEnteringMessage(
         joinPoint, enteringLevel, annotation.enteringMessage(), logger, stringLookup);
+    logElapsed(enteringTime);
+  }
+
+  private void logElapsed(long enteringTime) {
+    LOGGER.debug("[logBefore] elapsed [{}]", Duration.ofNanos(System.nanoTime() - enteringTime));
   }
 
   private boolean isDisabled() {

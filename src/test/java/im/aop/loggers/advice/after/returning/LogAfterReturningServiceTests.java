@@ -64,7 +64,7 @@ class LogAfterReturningServiceTests {
 
               final LogAfterReturningService service =
                   context.getBean(LogAfterReturningService.class);
-              service.log(joinPoint, annotation, "foo");
+              service.logAfterReturning(joinPoint, annotation, "foo");
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -79,7 +79,7 @@ class LogAfterReturningServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
-          service.log(joinPoint, annotation, "foo");
+          service.logAfterReturning(joinPoint, annotation, "foo");
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -97,7 +97,7 @@ class LogAfterReturningServiceTests {
 
               final LogAfterReturningService service =
                   context.getBean(LogAfterReturningService.class);
-              service.log(joinPoint, annotation, "foo");
+              service.logAfterReturning(joinPoint, annotation, "foo");
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -115,7 +115,7 @@ class LogAfterReturningServiceTests {
 
               final LogAfterReturningService service =
                   context.getBean(LogAfterReturningService.class);
-              service.log(joinPoint, annotation, "foo");
+              service.logAfterReturning(joinPoint, annotation, "foo");
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -133,7 +133,7 @@ class LogAfterReturningServiceTests {
 
               final LogAfterReturningService service =
                   context.getBean(LogAfterReturningService.class);
-              service.log(joinPoint, annotation, "foo");
+              service.logAfterReturning(joinPoint, annotation, "foo");
 
               assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
@@ -148,9 +148,63 @@ class LogAfterReturningServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
-          service.log(joinPoint, annotation, "foo");
+          service.logAfterReturning(joinPoint, annotation, "foo");
 
           assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void doesNotLogElapsed_whenDisabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "foo");
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(LogAfterReturningService.class.getName(), LogLevel.DEBUG);
+
+              final LogAfterReturningService service =
+                  context.getBean(LogAfterReturningService.class);
+              service.logAfterReturning(joinPoint, annotation, "foo");
+
+              assertThat(capturedOutput).doesNotContain("[logAfterReturning] elapsed [");
+            });
+  }
+
+  @Test
+  void logElapsed_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterReturning annotation = mockLogAfterReturning(Level.DEBUG, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAfterReturningService.class.getName(), LogLevel.DEBUG);
+
+          final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
+          service.logAfterReturning(joinPoint, annotation, "foo");
+
+          assertThat(capturedOutput).contains("[logAfterReturning] elapsed [");
+        });
+  }
+
+  @Test
+  void logElapsed_whenEnabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterReturning annotation = mockLogAfterReturning(Level.INFO, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAfterReturningService.class.getName(), LogLevel.DEBUG);
+
+          final LogAfterReturningService service = context.getBean(LogAfterReturningService.class);
+          service.logAfterReturning(joinPoint, annotation, "foo");
+
+          assertThat(capturedOutput).contains("[logAfterReturning] elapsed [");
         });
   }
 

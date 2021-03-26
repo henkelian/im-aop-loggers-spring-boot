@@ -38,7 +38,7 @@ class LogAroundAdviceTests {
       return new LogAroundService(aopLoggersProperties) {
 
         @Override
-        public Object log(ProceedingJoinPoint joinPoint, LogAround logAround) throws Throwable {
+        public Object logAround(ProceedingJoinPoint joinPoint, LogAround logAround) throws Throwable {
           LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringType())
               .info("{}", joinPoint);
 

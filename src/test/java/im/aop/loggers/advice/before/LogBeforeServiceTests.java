@@ -63,7 +63,7 @@ class LogBeforeServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
-              service.log(joinPoint, annotation);
+              service.logBefore(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("DEBUG " + Foo.class.getName() + " - foo");
             });
@@ -80,7 +80,7 @@ class LogBeforeServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.DEBUG);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
-              service.log(joinPoint, annotation);
+              service.logBefore(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -97,7 +97,7 @@ class LogBeforeServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
-              service.log(joinPoint, annotation);
+              service.logBefore(joinPoint, annotation);
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -112,7 +112,7 @@ class LogBeforeServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogBeforeService service = context.getBean(LogBeforeService.class);
-          service.log(joinPoint, annotation);
+          service.logBefore(joinPoint, annotation);
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -129,7 +129,7 @@ class LogBeforeServiceTests {
                   .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
               final LogBeforeService service = context.getBean(LogBeforeService.class);
-              service.log(joinPoint, annotation);
+              service.logBefore(joinPoint, annotation);
 
               assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
             });
@@ -144,9 +144,62 @@ class LogBeforeServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogBeforeService service = context.getBean(LogBeforeService.class);
-          service.log(joinPoint, annotation);
+          service.logBefore(joinPoint, annotation);
 
           assertThat(capturedOutput).doesNotContain("INFO " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void doesNotLogElapsed_whenDisabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogBefore annotation = mockLogBefore(Level.INFO, "foo");
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(LogBeforeService.class.getName(), LogLevel.DEBUG);
+
+              final LogBeforeService service = context.getBean(LogBeforeService.class);
+              service.logBefore(joinPoint, annotation);
+
+              assertThat(capturedOutput).doesNotContain("[logBefore] elapsed [");
+            });
+  }
+
+  @Test
+  void logElapsed_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogBefore annotation = mockLogBefore(Level.DEBUG, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogBeforeService.class.getName(), LogLevel.DEBUG);
+
+          final LogBeforeService service = context.getBean(LogBeforeService.class);
+          service.logBefore(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("[logBefore] elapsed [");
+        });
+  }
+
+  @Test
+  void logElapsed_whenEnabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogBefore annotation = mockLogBefore(Level.INFO, "foo");
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.INFO);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogBeforeService.class.getName(), LogLevel.DEBUG);
+
+          final LogBeforeService service = context.getBean(LogBeforeService.class);
+          service.logBefore(joinPoint, annotation);
+
+          assertThat(capturedOutput).contains("[logBefore] elapsed [");
         });
   }
 

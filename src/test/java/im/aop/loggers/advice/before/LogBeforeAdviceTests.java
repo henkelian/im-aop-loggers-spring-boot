@@ -37,7 +37,7 @@ class LogBeforeAdviceTests {
     public LogBeforeService logBeforeService(final AopLoggersProperties aopLoggersProperties) {
       return new LogBeforeService(aopLoggersProperties) {
         @Override
-        public void log(JoinPoint joinPoint, LogBefore logBefore) {
+        public void logBefore(JoinPoint joinPoint, LogBefore logBefore) {
           LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringType())
               .info("{}", joinPoint);
         }

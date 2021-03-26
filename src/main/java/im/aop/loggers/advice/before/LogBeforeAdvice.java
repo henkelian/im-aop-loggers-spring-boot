@@ -45,6 +45,6 @@ public class LogBeforeAdvice {
   }
 
   protected void logBefore(final JoinPoint joinPoint, final LogBefore logBefore) throws Throwable {
-    logBeforeService.log(joinPoint, logBefore);
+    logBeforeService.logBefore(joinPoint, logBefore);
   }
 }

@@ -1,9 +1,11 @@
 package im.aop.loggers.advice.after.throwing;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import im.aop.loggers.AopLoggersProperties;
 import im.aop.loggers.logging.Level;
@@ -14,6 +16,8 @@ import im.aop.loggers.logging.message.StringSubstitutor;
 import im.aop.loggers.logging.message.StringSupplierLookup;
 
 public class LogAfterThrowingService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogAfterThrowingService.class);
 
   private static final StringSubstitutor STRING_SUBSTITUTOR = new StringSubstitutor();
 
@@ -31,13 +35,19 @@ public class LogAfterThrowingService {
     this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
   }
 
-  public void log(
+  public void logAfterThrowing(
       final JoinPoint joinPoint, final LogAfterThrowing annotation, final Throwable exception) {
+    if (isDisabled()) {
+      return;
+    }
+
+    final long enteringTime = System.nanoTime();
+
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
     final Level exitedAbnormallyLevel = getExitedAbnormallyLevel(annotation.level());
-    if (isDisabled()
-        || isLoggerLevelDisabled(logger, exitedAbnormallyLevel)
+    if (isLoggerLevelDisabled(logger, exitedAbnormallyLevel)
         || isIgnoredException(exception, annotation.ignoreExceptions())) {
+      logElapsed(enteringTime);
       return;
     }
 
@@ -45,6 +55,12 @@ public class LogAfterThrowingService {
 
     logExitedAbnormallyMessage(
         joinPoint, exitedAbnormallyLevel, annotation, logger, stringLookup, exception);
+    logElapsed(enteringTime);
+  }
+
+  private void logElapsed(long enteringTime) {
+    LOGGER.debug(
+        "[logAfterThrowing] elapsed [{}]", Duration.ofNanos(System.nanoTime() - enteringTime));
   }
 
   private boolean isDisabled() {

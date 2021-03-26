@@ -58,6 +58,6 @@ public class LogAfterReturningAdvice {
       final LogAfterReturning logAfterReturning,
       final Object returnValue)
       throws Throwable {
-    logAfterReturningService.log(joinPoint, logAfterReturning, returnValue);
+    logAfterReturningService.logAfterReturning(joinPoint, logAfterReturning, returnValue);
   }
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import im.aop.loggers.AopLoggersProperties;
 import im.aop.loggers.logging.Level;
@@ -18,6 +19,8 @@ import im.aop.loggers.logging.message.StringSubstitutor;
 import im.aop.loggers.logging.message.StringSupplierLookup;
 
 public class LogAroundService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogAroundService.class);
 
   private static final LoggerService LOGGER_SERVICE = new LoggerService();
 
@@ -44,38 +47,49 @@ public class LogAroundService {
     this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
   }
 
-  public Object log(final ProceedingJoinPoint joinPoint, final LogAround logAround)
+  public Object logAround(final ProceedingJoinPoint joinPoint, final LogAround logAround)
       throws Throwable {
     if (isDisabled()) {
       return joinPoint.proceed();
     }
 
+    final long enteringTime = System.nanoTime();
+
     final Logger logger = LOGGER_SERVICE.getLogger(logAround.declaringClass(), joinPoint);
     final StringSupplierLookup stringLookup = new StringSupplierLookup();
 
     logEnteringMessage(joinPoint, logAround, logger, stringLookup);
-    final long beforeTime = System.nanoTime();
+    final long beforeProceedTime = System.nanoTime();
 
     try {
 
       final Object returnValue = joinPoint.proceed();
 
-      final long elapsedTime = System.nanoTime() - beforeTime;
+      final long proceedElapsedTime = System.nanoTime() - beforeProceedTime;
       logExitedMessage(joinPoint, logAround, logger, stringLookup, returnValue);
-      logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
-      logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
+      logElapsedTime(joinPoint, logAround, logger, stringLookup, proceedElapsedTime);
+      logElapsedWarning(joinPoint, logAround, logger, stringLookup, proceedElapsedTime);
+
+      logElapsed(enteringTime, proceedElapsedTime);
 
       return returnValue;
 
     } catch (Throwable e) {
 
-      final long elapsedTime = System.nanoTime() - beforeTime;
+      final long proceedElapsedTime = System.nanoTime() - beforeProceedTime;
       logExitedAbnormallyMessage(joinPoint, logAround, logger, stringLookup, e);
-      logElapsedTime(joinPoint, logAround, logger, stringLookup, elapsedTime);
-      logElapsedWarning(joinPoint, logAround, logger, stringLookup, elapsedTime);
+      logElapsedTime(joinPoint, logAround, logger, stringLookup, proceedElapsedTime);
+      logElapsedWarning(joinPoint, logAround, logger, stringLookup, proceedElapsedTime);
 
+      logElapsed(enteringTime, proceedElapsedTime);
       throw e;
     }
+  }
+
+  private void logElapsed(final long enteringTime, final long proceedElapsedTime) {
+    LOGGER.debug(
+        "[logAround] elapsed [{}]",
+        Duration.ofNanos(System.nanoTime() - enteringTime - proceedElapsedTime));
   }
 
   private boolean isDisabled() {

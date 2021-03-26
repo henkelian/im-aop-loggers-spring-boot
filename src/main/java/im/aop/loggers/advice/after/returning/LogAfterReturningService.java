@@ -1,9 +1,11 @@
 package im.aop.loggers.advice.after.returning;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import im.aop.loggers.AopLoggersProperties;
 import im.aop.loggers.logging.Level;
@@ -14,6 +16,8 @@ import im.aop.loggers.logging.message.StringSubstitutor;
 import im.aop.loggers.logging.message.StringSupplierLookup;
 
 public class LogAfterReturningService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogAfterReturningService.class);
 
   private static final StringSubstitutor STRING_SUBSTITUTOR = new StringSubstitutor();
 
@@ -31,11 +35,18 @@ public class LogAfterReturningService {
     this.aopLoggersProperties = Objects.requireNonNull(aopLoggersProperties);
   }
 
-  public void log(
+  public void logAfterReturning(
       final JoinPoint joinPoint, final LogAfterReturning annotation, final Object returnValue) {
+    if (isDisabled()) {
+      return;
+    }
+
+    final long enteringTime = System.nanoTime();
+
     final Logger logger = LOGGER_SERVICE.getLogger(annotation.declaringClass(), joinPoint);
     final Level exitedLevel = getExitedLevel(annotation.level());
-    if (isDisabled() || isLoggerLevelDisabled(logger, exitedLevel)) {
+    if (isLoggerLevelDisabled(logger, exitedLevel)) {
+      logElapsed(enteringTime);
       return;
     }
 
@@ -43,6 +54,12 @@ public class LogAfterReturningService {
 
     logExitedMessage(
         joinPoint, exitedLevel, annotation.exitedMessage(), logger, stringLookup, returnValue);
+    logElapsed(enteringTime);
+  }
+
+  private void logElapsed(long enteringTime) {
+    LOGGER.debug(
+        "[logAfterReturning] elapsed [{}]", Duration.ofNanos(System.nanoTime() - enteringTime));
   }
 
   private boolean isDisabled() {

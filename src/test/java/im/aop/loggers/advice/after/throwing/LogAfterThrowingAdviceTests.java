@@ -40,7 +40,7 @@ class LogAfterThrowingAdviceTests {
       return new LogAfterThrowingService(aopLoggersProperties) {
 
         @Override
-        public void log(
+        public void logAfterThrowing(
             JoinPoint joinPoint, LogAfterThrowing logAfterThrowing, Throwable thrownException) {
           LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringType())
               .info(

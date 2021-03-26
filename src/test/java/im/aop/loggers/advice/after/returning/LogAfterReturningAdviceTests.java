@@ -39,7 +39,7 @@ class LogAfterReturningAdviceTests {
       return new LogAfterReturningService(aopLoggersProperties) {
 
         @Override
-        public void log(
+        public void logAfterReturning(
             JoinPoint joinPoint, LogAfterReturning logAfterReturning, Object returnedValue) {
           LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringType())
               .info("joinPoint={}, returnedValue={}", joinPoint, returnedValue);

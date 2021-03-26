@@ -66,7 +66,7 @@ class LogAfterThrowingServiceTests {
 
               final LogAfterThrowingService service =
                   context.getBean(LogAfterThrowingService.class);
-              service.log(joinPoint, annotation, new RuntimeException("foo"));
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
               assertThat(capturedOutput).contains("WARN " + Foo.class.getName() + " - foo");
             });
@@ -84,7 +84,7 @@ class LogAfterThrowingServiceTests {
 
               final LogAfterThrowingService service =
                   context.getBean(LogAfterThrowingService.class);
-              service.log(joinPoint, annotation, new RuntimeException("foo"));
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
               assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
             });
@@ -102,7 +102,7 @@ class LogAfterThrowingServiceTests {
 
               final LogAfterThrowingService service =
                   context.getBean(LogAfterThrowingService.class);
-              service.log(joinPoint, annotation, new RuntimeException());
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
               assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
             });
@@ -117,7 +117,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException());
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
           assertThat(capturedOutput).contains("INFO " + Foo.class.getName() + " - foo");
         });
@@ -135,7 +135,7 @@ class LogAfterThrowingServiceTests {
 
               final LogAfterThrowingService service =
                   context.getBean(LogAfterThrowingService.class);
-              service.log(joinPoint, annotation, new RuntimeException("foo"));
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
               assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
             });
@@ -150,7 +150,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException("foo"));
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
           assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -169,7 +169,7 @@ class LogAfterThrowingServiceTests {
 
               final LogAfterThrowingService service =
                   context.getBean(LogAfterThrowingService.class);
-              service.log(joinPoint, annotation, new RuntimeException());
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
               assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
             });
@@ -185,7 +185,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException());
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
           assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -201,7 +201,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException());
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -216,7 +216,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, null);
+          service.logAfterThrowing(joinPoint, annotation, null);
 
           assertThat(capturedOutput).doesNotContain("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -232,7 +232,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException());
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
         });
@@ -249,9 +249,102 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException());
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
 
           assertThat(capturedOutput).contains("ERROR " + Foo.class.getName() + " - foo");
+        });
+  }
+
+  @Test
+  void doesNotLogElapsed_whenDisabled(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
+        .run(
+            (context) -> {
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(LogAfterThrowingService.class.getName(), LogLevel.DEBUG);
+
+              final LogAfterThrowingService service =
+                  context.getBean(LogAfterThrowingService.class);
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
+
+              assertThat(capturedOutput).doesNotContain("[logAfterThrowing] elapsed [");
+            });
+  }
+
+  @Test
+  void logElapsed_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAfterThrowingService.class.getName(), LogLevel.DEBUG);
+
+          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
+
+          assertThat(capturedOutput).contains("[logAfterThrowing] elapsed [");
+        });
+  }
+
+  @Test
+  void logElapsed_whenExceptionIgnoredGlobally(final CapturedOutput capturedOutput) {
+    runner
+        .withPropertyValues(
+            AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
+        .run(
+            (context) -> {
+              final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "foo", null);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+              LoggingSystem.get(ClassLoader.getSystemClassLoader())
+                  .setLogLevel(LogAfterThrowingService.class.getName(), LogLevel.DEBUG);
+
+              final LogAfterThrowingService service =
+                  context.getBean(LogAfterThrowingService.class);
+              service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
+
+              assertThat(capturedOutput).contains("[logAfterThrowing] elapsed [");
+            });
+  }
+
+  @Test
+  void logElapsed_whenExceptionIgnoredLocally(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowing annotation =
+              mockLogAfterThrowing(Level.ERROR, "foo", Arrays.array(RuntimeException.class));
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAfterThrowingService.class.getName(), LogLevel.DEBUG);
+
+          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException());
+
+          assertThat(capturedOutput).contains("[logAfterThrowing] elapsed [");
+        });
+  }
+
+  @Test
+  void logElapsed_whenEnabled(final CapturedOutput capturedOutput) {
+    runner.run(
+        (context) -> {
+          final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "foo", null);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(Foo.class.getName(), LogLevel.ERROR);
+          LoggingSystem.get(ClassLoader.getSystemClassLoader())
+              .setLogLevel(LogAfterThrowingService.class.getName(), LogLevel.DEBUG);
+
+          final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
+
+          assertThat(capturedOutput).contains("[logAfterThrowing] elapsed [");
         });
   }
 
@@ -278,7 +371,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException("foo"));
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
           assertThat(capturedOutput)
               .containsSubsequence(
@@ -295,7 +388,7 @@ class LogAfterThrowingServiceTests {
               .setLogLevel(Foo.class.getName(), LogLevel.INFO);
 
           final LogAfterThrowingService service = context.getBean(LogAfterThrowingService.class);
-          service.log(joinPoint, annotation, new RuntimeException("foo"));
+          service.logAfterThrowing(joinPoint, annotation, new RuntimeException("foo"));
 
           assertThat(capturedOutput)
               .contains("INFO " + Foo.class.getName() + " - foo")

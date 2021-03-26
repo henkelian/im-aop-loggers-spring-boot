@@ -52,6 +52,6 @@ public class LogAfterThrowingAdvice {
   protected void logAfterThrowing(
       final JoinPoint joinPoint, final LogAfterThrowing logAfterThrowing, final Throwable exception)
       throws Throwable {
-    logAfterThrowingService.log(joinPoint, logAfterThrowing, exception);
+    logAfterThrowingService.logAfterThrowing(joinPoint, logAfterThrowing, exception);
   }
 }

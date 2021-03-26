@@ -46,6 +46,6 @@ public class LogAroundAdvice {
 
   protected Object logAround(final ProceedingJoinPoint joinPoint, final LogAround logAround)
       throws Throwable {
-    return logAroundService.log(joinPoint, logAround);
+    return logAroundService.logAround(joinPoint, logAround);
   }
 }
