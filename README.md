@@ -269,7 +269,15 @@ Values configured with annotation attributes has `higher priority` over configur
 
 If, for any reason, you need to disable `I'm AOP Loggers`, you can set the following property in `application.properties`:
 ```properties
-im.aop.loggers.enabled = false
+im.aop.loggers.enabled=false
+```
+
+To enable logging of elapsed time for each of `I'm AOP Loggers`, you can set the following property in `application.properties`:
+```properties
+logging.level.im.aop.loggers.advice.LogBeforeService=DEBUG
+logging.level.im.aop.loggers.advice.LogAfterReturningService=DEBUG
+logging.level.im.aop.loggers.advice.LogAfterThrowingService=DEBUG
+logging.level.im.aop.loggers.advice.LogAroundService=DEBUG
 ```
 
 ---
