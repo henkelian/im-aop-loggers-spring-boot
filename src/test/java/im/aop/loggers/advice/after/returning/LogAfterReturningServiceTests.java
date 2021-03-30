@@ -122,7 +122,7 @@ class LogAfterReturningServiceTests {
   }
 
   @Test
-  void logExitedMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -140,7 +140,7 @@ class LogAfterReturningServiceTests {
   }
 
   @Test
-  void logExitedMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedMessage_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterReturning annotation = mockLogAfterReturning(Level.DEBUG, "foo");

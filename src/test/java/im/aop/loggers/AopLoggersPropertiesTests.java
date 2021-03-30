@@ -34,7 +34,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void enabled_withPropertyValue() {
+  void enabled_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -54,7 +54,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void enteringLevel_withPropertyValue() {
+  void enteringLevel_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-level=TRACE")
         .run(
@@ -75,7 +75,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void enteringMessage_withPropertyValue() {
+  void enteringMessage_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".entering-message=foo")
         .run(
@@ -95,7 +95,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void exitedLevel_withPropertyValue() {
+  void exitedLevel_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-level=TRACE")
         .run(
@@ -116,7 +116,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void exitedMessage_withPropertyValue() {
+  void exitedMessage_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-message=foo")
         .run(
@@ -136,7 +136,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void exitedAbnormallyLevel_withPropertyValue() {
+  void exitedAbnormallyLevel_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-level=TRACE")
         .run(
@@ -157,7 +157,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void exitedAbnormallyMessage_withPropertyValue() {
+  void exitedAbnormallyMessage_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".exited-abnormally-message=foo")
         .run(
@@ -177,7 +177,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void ignoreExceptions_withPropertyValue() {
+  void ignoreExceptions_givenPropertyValue() {
     runner
         .withPropertyValues(
             AopLoggersProperties.PREFIX + ".ignore-exceptions[0]=java.lang.RuntimeException")
@@ -198,7 +198,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void elapsedLevel_withPropertyValue() {
+  void elapsedLevel_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-level=TRACE")
         .run(
@@ -218,7 +218,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void elapsedMessage_withPropertyValue() {
+  void elapsedMessage_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-message=foo")
         .run(
@@ -238,7 +238,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void elapsedWarningLevel_withPropertyValue() {
+  void elapsedWarningLevel_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-warning-level=TRACE")
         .run(
@@ -259,7 +259,7 @@ class AopLoggersPropertiesTests {
   }
 
   @Test
-  void elapsedWarningMessage_withPropertyValue() {
+  void elapsedWarningMessage_givenPropertyValue() {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".elapsed-warning-message=foo")
         .run(

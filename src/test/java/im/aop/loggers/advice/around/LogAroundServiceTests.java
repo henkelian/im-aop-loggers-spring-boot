@@ -123,7 +123,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logEnteringMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogEnteringMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -140,7 +140,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logEnteringMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogEnteringMessage_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAround annotation = mockLogAroundForEntering(Level.DEBUG, "foo");
@@ -283,7 +283,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedNormallyMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedNormallyMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -302,7 +302,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedNormallyMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedNormallyMessage_whenLoggerLevelDisabled(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenReturn("foo");
@@ -448,7 +449,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -467,7 +468,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenLoggerLevelDisabled(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException());
@@ -484,7 +486,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_globallyIgnoredException(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenMatchPropertyIgnoreExceptions(
+      final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(
             AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
@@ -505,7 +508,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_locallyIgnoredException(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenMatchAttributeIgnoreExceptions(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException());
@@ -524,7 +528,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_nonIgnoredException(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_whenNotMatchIgnoreException(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException());
@@ -543,7 +547,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_emptyIgnoredExceptions(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_givenEmptyIgnoreExceptions(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException());
@@ -561,7 +565,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_ignoredExceptionsContainNull(
+  void logExitedAbnormallyMessage_whenExceptionInIgnoreExceptionsIsNull(
       final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
@@ -641,7 +645,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_enablePrintStackTrace(final CapturedOutput capturedOutput) {
+  void logExceptionStackTrace_whenEnablePrintStackTrace(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException("foo"));
@@ -660,7 +664,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_disablePrintStackTrace(final CapturedOutput capturedOutput) {
+  void doesNotLogExceptionStackTrace_whenDisablePrintStackTrace(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           when(joinPoint.proceed()).thenThrow(new RuntimeException());
@@ -771,7 +776,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logElapsedMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogElapsedMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -788,7 +793,7 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logElapsedMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogElapsedMessage_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAround annotation = mockLogAroundForElapsed(Level.DEBUG, "foo");
@@ -985,7 +990,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logElapsedWarningMessage_elapsedTimeLimitEqualsZero(final CapturedOutput capturedOutput) {
+  void doesNotLogElapsedWarningMessage_whenElapsedTimeLimitEqualsZero(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAround annotation =
@@ -1001,7 +1007,8 @@ class LogAroundServiceTests {
   }
 
   @Test
-  void logElapsedWarningMessage_notExceedElapsedTimeLimit(final CapturedOutput capturedOutput) {
+  void doesNotLogElapsedWarningMessage_whenElapsedTimeNotExceedLimit(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAround annotation =

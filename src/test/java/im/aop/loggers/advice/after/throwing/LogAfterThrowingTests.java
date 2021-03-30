@@ -24,7 +24,7 @@ class LogAfterThrowingThrowingTests {
   }
 
   @Test
-  void declaringClass_customValue() {
+  void declaringClass_givenAttributeValue() {
     @LogBefore(declaringClass = Local.class)
     class Local {};
 
@@ -42,7 +42,7 @@ class LogAfterThrowingThrowingTests {
   }
 
   @Test
-  void level_customValue() {
+  void level_givenAttributeValue() {
     @LogAfterThrowing(level = Level.DEBUG)
     class Local {};
 
@@ -60,7 +60,7 @@ class LogAfterThrowingThrowingTests {
   }
 
   @Test
-  void exitedAbnormallyMessage_customValue() {
+  void exitedAbnormallyMessage_givenAttributeValue() {
     @LogAfterThrowing(exitedAbnormallyMessage = "foo")
     class Local {};
 
@@ -78,7 +78,7 @@ class LogAfterThrowingThrowingTests {
   }
 
   @Test
-  void ignoreExceptions_customValue() {
+  void ignoreExceptions_givenAttributeValue() {
     @LogAfterThrowing(ignoreExceptions = {RuntimeException.class})
     class Local {};
 
@@ -96,7 +96,7 @@ class LogAfterThrowingThrowingTests {
   }
 
   @Test
-  void printStackTrace_customValue() {
+  void printStackTrace_givenAttributeValue() {
     @LogAfterThrowing(printStackTrace = false)
     class Local {};
 

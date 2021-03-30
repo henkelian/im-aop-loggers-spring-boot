@@ -23,7 +23,7 @@ class LogBeforeTests {
   }
 
   @Test
-  void declaringClass_customValue() {
+  void declaringClass_givenAttributeValue() {
     @LogBefore(declaringClass = Local.class)
     class Local {};
 
@@ -41,7 +41,7 @@ class LogBeforeTests {
   }
 
   @Test
-  void level_customValue() {
+  void level_givenAttributeValue() {
     @LogBefore(level = Level.DEBUG)
     class Local {};
 
@@ -59,7 +59,7 @@ class LogBeforeTests {
   }
 
   @Test
-  void enteringMessage_customValue() {
+  void enteringMessage_givenAttributeValue() {
     @LogBefore(enteringMessage = "foo")
     class Local {};
 

@@ -69,7 +69,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithoutParameter_methodContext(final CapturedOutput capturedOutput) {
+  void methodWithoutParameter_annotatedOnMethod(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestMethodContext.class)
         .run(
@@ -87,7 +87,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithParameter_methodContext(final CapturedOutput capturedOutput) {
+  void methodWithParameter_annotatedOnMethod(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestMethodContext.class)
         .run(
@@ -105,7 +105,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithResult_methodContext(final CapturedOutput capturedOutput) {
+  void methodWithResult_annotatedOnMethod(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestMethodContext.class)
         .run(
@@ -123,7 +123,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void toString_methodContext(final CapturedOutput capturedOutput) {
+  void toString_annotatedOnMethod(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestMethodContext.class)
         .run(
@@ -158,7 +158,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithoutParameter_classContext(final CapturedOutput capturedOutput) {
+  void methodWithoutParameter_annotatedOnClass(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestClassContext.class)
         .run(
@@ -176,7 +176,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithParameter_classContext(final CapturedOutput capturedOutput) {
+  void methodWithParameter_annotatedOnClass(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestClassContext.class)
         .run(
@@ -194,7 +194,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void methodWithResult_classContext(final CapturedOutput capturedOutput) {
+  void methodWithResult_annotatedOnClass(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestClassContext.class)
         .run(
@@ -212,7 +212,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void toString_classContext(final CapturedOutput capturedOutput) {
+  void toString_annotatedOnClass(final CapturedOutput capturedOutput) {
     runner
         .withBean(TestClassContext.class)
         .run(
@@ -230,7 +230,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void codeCoverage_publicMethod() {
+  void publicMethod_fulfillCoverageRatio() {
     runner.run(
         (context) -> {
           final LogAfterReturningAdvice logAfterReturningAdvice =
@@ -240,7 +240,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void codeCoverage_toStringMethod() {
+  void toStringMethod_fulfillCoverageRatio() {
     runner.run(
         (context) -> {
           final LogAfterReturningAdvice logAfterReturningAdvice =
@@ -250,7 +250,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void codeCoverage_logAfterReturningMethodContext() {
+  void logAfterReturningMethodContext_fulfillCoverageRatio() {
     runner.run(
         (context) -> {
           final LogAfterReturningAdvice logAfterReturningAdvice =
@@ -260,7 +260,7 @@ class LogAfterReturningAdviceTests {
   }
 
   @Test
-  void codeCoverage_logAfterReturningClassContext() {
+  void logAfterReturningClassContext_fulfillCoverageRatio() {
     runner.run(
         (context) -> {
           final LogAfterReturningAdvice logAfterReturningAdvice =

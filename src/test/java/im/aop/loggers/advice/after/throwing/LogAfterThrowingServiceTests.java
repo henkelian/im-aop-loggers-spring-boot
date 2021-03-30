@@ -124,7 +124,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -142,7 +142,8 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenLoggerLevelDisabled(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation = mockLogAfterThrowing(Level.DEBUG, "foo", null);
@@ -157,7 +158,8 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_globalIgnoredException(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenMatchPropertyIgnoreExceptions(
+      final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(
             AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
@@ -176,7 +178,8 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_locallyIgnoredException(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_whenMatchAttributeIgnoreExceptions(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
@@ -192,7 +195,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_nonIgnoredException(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_whenNotMatchIgnoreException(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
@@ -208,7 +211,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_nullException(final CapturedOutput capturedOutput) {
+  void doesNotLogExitedAbnormallyMessage_givenNullException(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation = mockLogAfterThrowing(Level.ERROR, "foo", null);
@@ -223,7 +226,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_emptyIgnoredExceptions(final CapturedOutput capturedOutput) {
+  void logExitedAbnormallyMessage_givenEmptyIgnoreExceptions(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
@@ -239,7 +242,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_ignoredExceptionsContainNull(
+  void logExitedAbnormallyMessage_whenExceptionInIgnoreExceptionsIsNull(
       final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
@@ -293,7 +296,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logElapsed_whenExceptionIgnoredGlobally(final CapturedOutput capturedOutput) {
+  void logElapsed_whenMatchPropertyIgnoreExceptions(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(
             AopLoggersProperties.PREFIX + ".ignore-exceptions=java.lang.RuntimeException")
@@ -314,7 +317,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logElapsed_whenExceptionIgnoredLocally(final CapturedOutput capturedOutput) {
+  void logElapsed_whenMatchAttributeIgnoreExceptions(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation =
@@ -363,7 +366,7 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_enablePrintStackTrace(final CapturedOutput capturedOutput) {
+  void logExceptionStackTrace_whenEnablePrintStackTrace(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation = mockLogAfterThrowing(Level.INFO, "foo", true);
@@ -380,7 +383,8 @@ class LogAfterThrowingServiceTests {
   }
 
   @Test
-  void logExitedAbnormallyMessage_disablePrintStackTrace(final CapturedOutput capturedOutput) {
+  void doesNotLogExceptionStackTrace_whenDisablePrintStackTrace(
+      final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogAfterThrowing annotation = mockLogAfterThrowing(Level.INFO, "foo", false);

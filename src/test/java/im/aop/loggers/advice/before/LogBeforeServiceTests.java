@@ -119,7 +119,7 @@ class LogBeforeServiceTests {
   }
 
   @Test
-  void logEnteringMessage_disabled(final CapturedOutput capturedOutput) {
+  void doesNotLogEnteringMessage_whenDisabled(final CapturedOutput capturedOutput) {
     runner
         .withPropertyValues(AopLoggersProperties.PREFIX + ".enabled=false")
         .run(
@@ -136,7 +136,7 @@ class LogBeforeServiceTests {
   }
 
   @Test
-  void logEnteringMessage_loggerLevelDisabled(final CapturedOutput capturedOutput) {
+  void doesNotLogEnteringMessage_whenLoggerLevelDisabled(final CapturedOutput capturedOutput) {
     runner.run(
         (context) -> {
           final LogBefore annotation = mockLogBefore(Level.DEBUG, "foo");

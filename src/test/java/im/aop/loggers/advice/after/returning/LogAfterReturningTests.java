@@ -24,7 +24,7 @@ class LogAfterReturningThrowingTests {
   }
 
   @Test
-  void declaringClass_customValue() {
+  void declaringClass_givenAttributeValue() {
     @LogBefore(declaringClass = Local.class)
     class Local {};
 
@@ -42,7 +42,7 @@ class LogAfterReturningThrowingTests {
   }
 
   @Test
-  void level_customValue() {
+  void level_givenAttributeValue() {
     @LogAfterReturning(level = Level.DEBUG)
     class Local {};
 
@@ -60,7 +60,7 @@ class LogAfterReturningThrowingTests {
   }
 
   @Test
-  void exitedMessage_customValue() {
+  void exitedMessage_givenAttributeValue() {
     @LogAfterReturning(exitedMessage = "foo")
     class Local {};
 

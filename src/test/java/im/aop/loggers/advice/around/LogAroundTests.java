@@ -26,7 +26,7 @@ class LogAroundTests {
   }
 
   @Test
-  void declaringClass_customValue() {
+  void declaringClass_givenAttributeValue() {
     @LogBefore(declaringClass = Local.class)
     class Local {};
 
@@ -44,7 +44,7 @@ class LogAroundTests {
   }
 
   @Test
-  void level_customValue() {
+  void level_givenAttributeValue() {
     @LogAround(level = Level.DEBUG)
     class Local {};
 
@@ -62,7 +62,7 @@ class LogAroundTests {
   }
 
   @Test
-  void enteringMessage_customValue() {
+  void enteringMessage_givenAttributeValue() {
     @LogAround(enteringMessage = "foo")
     class Local {};
 
@@ -80,7 +80,7 @@ class LogAroundTests {
   }
 
   @Test
-  void exitedMessage_customValue() {
+  void exitedMessage_givenAttributeValue() {
     @LogAround(exitedMessage = "foo")
     class Local {};
 
@@ -98,7 +98,7 @@ class LogAroundTests {
   }
 
   @Test
-  void exitedAbnormallyLevel_customValue() {
+  void exitedAbnormallyLevel_givenAttributeValue() {
     @LogAround(exitedAbnormallyLevel = Level.DEBUG)
     class Local {};
 
@@ -116,7 +116,7 @@ class LogAroundTests {
   }
 
   @Test
-  void exitedAbnormallyMessage_customValue() {
+  void exitedAbnormallyMessage_givenAttributeValue() {
     @LogAround(exitedAbnormallyMessage = "foo")
     class Local {};
 
@@ -134,7 +134,7 @@ class LogAroundTests {
   }
 
   @Test
-  void ignoreExceptions_customValue() {
+  void ignoreExceptions_givenAttributeValue() {
     @LogAround(ignoreExceptions = {RuntimeException.class})
     class Local {};
 
@@ -152,7 +152,7 @@ class LogAroundTests {
   }
 
   @Test
-  void printStackTrace_customValue() {
+  void printStackTrace_givenAttributeValue() {
     @LogAround(printStackTrace = false)
     class Local {};
 
@@ -170,7 +170,7 @@ class LogAroundTests {
   }
 
   @Test
-  void elapsedMessage_customValue() {
+  void elapsedMessage_givenAttributeValue() {
     @LogAround(elapsedMessage = "foo")
     class Local {};
 
@@ -188,7 +188,7 @@ class LogAroundTests {
   }
 
   @Test
-  void elapsedWarningLevel_customValue() {
+  void elapsedWarningLevel_givenAttributeValue() {
     @LogAround(elapsedWarningLevel = Level.DEBUG)
     class Local {};
 
@@ -206,7 +206,7 @@ class LogAroundTests {
   }
 
   @Test
-  void elapsedWarningMessage_customValue() {
+  void elapsedWarningMessage_givenAttributeValue() {
     @LogAround(elapsedWarningMessage = "foo")
     class Local {};
 
@@ -224,7 +224,7 @@ class LogAroundTests {
   }
 
   @Test
-  void elapsedTimeLimit_customValue() {
+  void elapsedTimeLimit_givenAttributeValue() {
     @LogAround(elapsedTimeLimit = 1)
     class Local {};
 
@@ -242,7 +242,7 @@ class LogAroundTests {
   }
 
   @Test
-  void elapsedTimeUnit_customValue() {
+  void elapsedTimeUnit_givenAttributeValue() {
     @LogAround(elapsedTimeUnit = ChronoUnit.SECONDS)
     class Local {};
 
